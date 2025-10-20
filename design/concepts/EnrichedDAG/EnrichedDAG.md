@@ -1,4 +1,4 @@
-# Concept: EnrichedAcyclicGraph
+# Concept: EnrichedDAG
 
 + **concept** EnrichedDAG[Object, User]
 + **purpose** Manipulation of a general directed acyclic graph object
