@@ -37,7 +37,12 @@
     + **requires** there is an AssignedObject with provided owner User and title
     + **effects** changes the description of the AssignedObject associated with input
       owner and title to newDescription
-+ Invariants
+  + *async* suggestTitle(owner: User): (titleSuggestion: String)
+    + **requires** there is at least one AssignedObject associated with input owner
+      User in the set of AssignedObjects
+    + **effects** returns a title String suggested by ✨AI✨ based on titles of
+      AssignedObjects associated with provided owner User
++ **Invariants**
   + There are no AssignedObjects with the same Object
   + There are no AssignedObjects with the same owner User and title String at the same
     time
