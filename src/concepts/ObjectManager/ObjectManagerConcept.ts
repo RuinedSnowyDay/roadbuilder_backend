@@ -1,6 +1,7 @@
 import { Collection, Db } from "npm:mongodb";
 import { Empty, ID } from "@utils/types.ts";
 import { freshID } from "@utils/database.ts";
+import type { GeminiLLM } from "@utils/gemini-llm.ts";
 
 // Collection prefix to ensure namespace separation
 const PREFIX = "ObjectManager" + ".";
@@ -30,7 +31,10 @@ interface AssignedObjectDoc {
 export default class ObjectManagerConcept {
   assignedObjects: Collection<AssignedObjectDoc>;
 
-  constructor(private readonly db: Db) {
+  constructor(
+    private readonly db: Db,
+    private readonly llm?: GeminiLLM,
+  ) {
     this.assignedObjects = this.db.collection(PREFIX + "assignedObjects");
   }
 
@@ -198,12 +202,43 @@ export default class ObjectManagerConcept {
       };
     }
 
-    // Simple AI suggestion: return a generic title with a number
-    // In a real implementation, this might use an AI service
-    const count = await this.assignedObjects.countDocuments({ owner });
-    const titleSuggestion = `My Object ${count + 1}`;
+    // If no LLM is available, fall back to simple suggestion
+    if (!this.llm) {
+      const count = await this.assignedObjects.countDocuments({ owner });
+      const titleSuggestion = `My Object ${count + 1}`;
+      return { titleSuggestion };
+    }
 
-    return { titleSuggestion };
+    // Construct prompt for LLM based on existing titles
+    const existingTitles = assignedObjects.map((ao) => ao.title);
+    const titlesList = existingTitles
+      .map((title, idx) => `${idx + 1}. ${title}`)
+      .join("\n");
+
+    const prompt =
+      `You are helping a user manage their objects. Given the following list of existing object titles they have created:
+
+${titlesList}
+
+Suggest a new, creative, and distinctive title that:
+1. Follows a similar style or pattern to their existing titles
+2. Is unique and won't conflict with their existing titles
+3. Is concise and descriptive
+4. Shows creativity and avoids being too generic
+
+Respond with ONLY the suggested title text, nothing else. Do not include quotation marks or any additional text.`;
+
+    try {
+      const suggestion = await this.llm.executeLLM(prompt);
+      const titleSuggestion = suggestion.trim().replace(/['"]/g, "");
+      return { titleSuggestion };
+    } catch (error) {
+      console.error("LLM error:", error);
+      // Fallback to simple suggestion
+      const count = await this.assignedObjects.countDocuments({ owner });
+      const titleSuggestion = `My Object ${count + 1}`;
+      return { titleSuggestion };
+    }
   }
 
   /**

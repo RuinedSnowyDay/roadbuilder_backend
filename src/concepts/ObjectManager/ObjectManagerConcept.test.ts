@@ -418,7 +418,16 @@ Deno.test("Action: changeAssignedObjectTitle with validation", async () => {
 
 Deno.test("Action: suggestTitle async behavior", async () => {
   const [db, client] = await testDb();
-  const objectManager = new ObjectManagerConcept(db);
+
+  // Initialize LLM if API key is available
+  let llm: any = undefined;
+  const apiKey = Deno.env.get("GEMINI_API_KEY");
+  if (apiKey) {
+    const { GeminiLLM } = await import("@utils/gemini-llm.ts");
+    llm = new GeminiLLM({ apiKey });
+  }
+
+  const objectManager = new ObjectManagerConcept(db, llm);
 
   try {
     console.log("\n# Testing Async suggestTitle Functionality");
