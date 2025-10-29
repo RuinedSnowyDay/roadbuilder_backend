@@ -1,7 +1,8 @@
 # Concept: EnrichedDAG
 
 + **concept** EnrichedDAG[Object, User]
-+ **purpose** Manipulation of a general directed acyclic graph object
++ **purpose** Model and manage hierarchical relationships or dependencies between
+  entities while ensuring the integrity of a non-circular structure
 + **principle** Users can create new graph, add nodes to the graph or remove them, add
   edges between nodes in the graph or remove them. Nodes have titles associated with
   them; they are unique to one particular graph and can be changed by the user.  All
