@@ -5,7 +5,7 @@ import { GeminiLLM } from "@utils/gemini-llm.ts";
 import EnrichedDAGConcept from "./EnrichedDAGConcept.ts";
 
 const userA = "user:Alice" as ID;
-const userB = "user:Bob" as ID;
+const _userB = "user:Bob" as ID;
 const enrichment1 = "enrichment:type-A" as ID;
 const enrichment2 = "enrichment:type-B" as ID;
 const enrichment3 = "enrichment:type-C" as ID;
@@ -387,7 +387,7 @@ Deno.test("Action: deleteGraph removes all associated nodes and edges", async ()
       enrichment: enrichment2,
     })) as { newNode: ID };
 
-    const { newNode: node1G2 } = (await dagConcept.addNode({
+    const { newNode: _node1G2 } = (await dagConcept.addNode({
       graph: graph2,
       nodeTitle: "G2 Node 1",
       enrichment: enrichment3,
@@ -609,14 +609,14 @@ Deno.test("Action: accessEdge and edge queries", async () => {
       enrichment: enrichment3,
     })) as { newNode: ID };
 
-    const { newEdge: edge1 } = (await dagConcept.addEdge({
+    const { newEdge: _edge1 } = (await dagConcept.addEdge({
       graph: newGraph,
       sourceNode: node1,
       targetNode: node2,
       enrichment: enrichment1,
     })) as { newEdge: ID };
 
-    const { newEdge: edge2 } = (await dagConcept.addEdge({
+    const { newEdge: _edge2 } = (await dagConcept.addEdge({
       graph: newGraph,
       sourceNode: node2,
       targetNode: node3,
@@ -809,7 +809,7 @@ Deno.test("Action: suggestEdge generates AI edge suggestions", async () => {
       enrichment: enrichment2,
     })) as { newNode: ID };
 
-    const { newNode: node3 } = (await dagConcept.addNode({
+    const { newNode: _node3 } = (await dagConcept.addNode({
       graph: newGraph,
       nodeTitle: "Testing",
       enrichment: enrichment3,
