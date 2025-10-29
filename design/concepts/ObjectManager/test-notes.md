@@ -31,9 +31,9 @@ leaks.
   left out some template code. I copied `gemini-llm.ts` from the AI-augmented code
   assignment and semi-manually edited it to make it work.
 
-  ## Raw test output
+## Raw test output
 
-  # Trace: Fulfilling the ObjectManager Operational Principle
+# Trace: Fulfilling the ObjectManager Operational Principle
 The principle states: 'Given an object, a user can give it a name and description, becoming an owner of this object. The user that owns the object can later change its name and description, but not the object binding itself.'
 
 ## 1. User creates assigned objects

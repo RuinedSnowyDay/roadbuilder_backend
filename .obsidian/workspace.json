@@ -171,6 +171,7 @@
   },
   "active": "60ccb8b74e272dda",
   "lastOpenFiles": [
+    "design/concepts/EnrichedDAG/test-notes.md",
     "design/concepts/ObjectManager/test-notes.md",
     "design/concepts/ObjectManager/notes.md",
     "src/concepts/EnrichedDAG/EnrichedDAGConcept.test.ts",
@@ -205,7 +206,6 @@
     "context/design/concepts/ObjectManager/implementation.md/steps/approach.5df2171f.md",
     "context/design/concepts/ObjectManager/implementation.md/steps/_.db39d951.md",
     "context/design/concepts/ObjectManager/implementation.md/steps/_.b0364a7a.md",
-    "context/design/concepts/ObjectManager/implementation.md/steps/_.70a98b60.md",
-    "context/design/concepts/ObjectManager/implementation.md/steps/_.3eb68380.md"
+    "context/design/concepts/ObjectManager/implementation.md/steps/_.70a98b60.md"
   ]
 }
