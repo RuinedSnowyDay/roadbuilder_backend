@@ -427,11 +427,12 @@ export default class EnrichedDAGConcept {
     }
 
     const nodesInGraph = await this.nodes.find({ parent: graph }).toArray();
+    const nodeIds = nodesInGraph.map((n) => n._id);
+
+    // Get edges where both source and target are in this graph
     const edgesInGraph = await this.edges.find({
-      $or: nodesInGraph.map((n) => ({
-        source: n._id,
-        target: { $in: nodesInGraph.map((n) => n._id) },
-      })),
+      source: { $in: nodeIds },
+      target: { $in: nodeIds },
     }).toArray();
 
     if (!this.llm) {
@@ -491,10 +492,11 @@ Respond with ONLY the suggested title, nothing else. Do not include quotation ma
     }
 
     const nodesInGraph = await this.nodes.find({ parent: graph }).toArray();
+    const nodeIds = nodesInGraph.map((n) => n._id);
+
+    // Get edges where source is in this graph
     const edgesInGraph = await this.edges.find({
-      $or: nodesInGraph.map((n) => ({
-        source: n._id,
-      })),
+      source: { $in: nodeIds },
     }).toArray();
 
     if (nodesInGraph.length < 2) {

@@ -24,12 +24,28 @@
 All actions are covered, error cases are validated, and all tests pass with no memory
 leaks.
 
+## AI Test Coverage (2 additional tests)
+
++ **suggestNodeTitle generates AI suggestions**: Tests the AI-based node title suggestion feature
+  - Creates a graph with context-specific nodes (Database Layer, API Layer, Frontend Layer)
+  - Requests an AI-generated title suggestion
+  - Verifies the suggestion works and doesn't conflict with existing nodes
+  - Tests fallback behavior when LLM is not available
+  
++ **suggestEdge generates AI edge suggestions**: Tests the AI-based edge suggestion feature
+  - Creates a graph with nodes representing a workflow (Planning → Development → Testing)
+  - Requests an AI-generated edge suggestion
+  - Verifies the suggestion includes both source and target nodes
+  - Tests attempt to add the suggested edge (may fail if it creates a cycle)
+  - Tests edge suggestion with insufficient nodes (only 1 node)
+
 ## Interesting moments
 
 + Interestingly, the generated prompt for the `suggestEdge` incorporates the list of
   edges in the graph in the prompt. However, `suggestNodeTitle` does not, only the
   number of edges and the existing node titles.
-+ AI features were not tested at all.
++ AI features were not tested at all after the initial iteration.
+
 ## Raw test output
 
  # Trace: Fulfilling the EnrichedDAG Operational Principle

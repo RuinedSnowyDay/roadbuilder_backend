@@ -171,6 +171,8 @@
   },
   "active": "60ccb8b74e272dda",
   "lastOpenFiles": [
+    "src/concepts/ObjectChecker/ObjectCheckerConcept.ts",
+    "src/concepts/ObjectChecker",
     "context/design/concepts/EnrichedDAG/test-assessment.md/20251028_234345.c7bb76f8.md",
     "context/design/concepts/EnrichedDAG/test-assessment.md/steps/response.4805a8dc.md",
     "context/design/concepts/EnrichedDAG/test-assessment.md/steps/file.09a18a89.md",
@@ -202,10 +204,8 @@
     "src/concepts/ResourceList",
     "design/concepts/EnrichedDAG/test-notes.md",
     "design/concepts/ObjectManager/test-notes.md",
-    "design/concepts/ObjectManager/notes.md",
     "src/concepts/EnrichedDAG/EnrichedDAGConcept.test.ts",
     "src/utils/gemini-llm.ts",
-    "src/concepts/EnrichedDAG/EnrichedDAGConcept.ts",
-    "src/concepts/EnrichedDAG/EnrichedDAG.ts"
+    "src/concepts/EnrichedDAG/EnrichedDAGConcept.ts"
   ]
 }
