@@ -29,9 +29,9 @@
       title String in the set of ResourceLists
     + **effects** returns the ResourceList that has the same owner User and listTitle
       title String the set of ResourceLists and returns this new ResourceList
-  + renameResourceList(resourceList: ResourceList)
+  + renameResourceList(resourceList: ResourceList, newTitle: String)
     + **requires** resourceList is in the set of ResourceLists
-    + **effects** renames the ResourceList to the new title String
+    + **effects** sets the title of provided resourceList to newTitle
   + appendResource(resourceList: ResourceList, resource: Resource, resourceTitle:
     String): (newIndexedResource: IndexedResource)
     + **requires** resourceList is in the set of ResourceLists
@@ -48,7 +48,9 @@
     + **requires** resourceList is in the set of ResourceLists, index is a non-negative
       integer less than the length of the ResourceList
     + **effects** removes the IndexedResource at the provided index from the set of
-      IndexedResources. Decrements the length of the ResourceList by 1.
+      IndexedResources. Decrements the length of the ResourceList by 1. Decrements
+      indices of all IndexedResources with list being provided resourceList and index
+      greater than provided index by 1.
   + swapResources(resourceList: ResourceList, index1: Number, index2: Number)
     + **requires** resourceList is in the set of ResourceLists, index1 and index2 are
       non-negative integers less than the length of the ResourceList
@@ -57,3 +59,6 @@
     + **requires** resourceList is in the set of ResourceLists
     + **effects** removes the ResourceList from the set of ResourceLists. Also removes all
       IndexedResources associated with the ResourceList from the set of IndexedResources.
+  + renameIndexedResource(indexedResource: IndexedResource, newTitle: String)
+    + **requires** indexedResource is in the set of IndexedResources
+    + **effects** sets the title of provided indexedResource to newTitle
