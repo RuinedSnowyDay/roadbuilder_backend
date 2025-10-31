@@ -48,29 +48,29 @@ leaks.
 
 ## Raw test output
 
- # Trace: Fulfilling the EnrichedDAG Operational Principle
+# Trace: Fulfilling the EnrichedDAG Operational Principle
 The principle states: 'Users can create new graph, add nodes to the graph or remove them, add edges between nodes in the graph or remove them. Nodes have titles associated with them; they are unique to one particular graph and can be changed by the user. User can't add edges so that they form a cycle in the graph.'
 
 ## 1. User creates a new graph
 - Action: createEmptyGraph({ owner: "user:Alice", graphTitle: "Project Dependencies" })
-  Result: Graph created with ID: `019a2e07-b3d0-7b57-8ecd-639fa33ee014`
+  Result: Graph created with ID: `019a2e1a-9454-7791-9370-d51e9782e4e8`
 
 ## 2. User adds nodes to the graph
-- Action: addNode({ graph: `019a2e07-b3d0-7b57-8ecd-639fa33ee014`, nodeTitle: "Database Design", enrichment: `enrichment:type-A` })
-  Result: Node created with ID: `019a2e07-b42c-779b-b404-7ffa7ff5881c`
-- Action: addNode({ graph: `019a2e07-b3d0-7b57-8ecd-639fa33ee014`, nodeTitle: "API Implementation", enrichment: `enrichment:type-B` })
-  Result: Node created with ID: `019a2e07-b4be-7410-b1a3-89c55a0f14ff`
-- Action: addNode({ graph: `019a2e07-b3d0-7b57-8ecd-639fa33ee014`, nodeTitle: "Frontend Development", enrichment: `enrichment:type-C` })
-  Result: Node created with ID: `019a2e07-b550-747f-8bad-998a4206d2d8`
+- Action: addNode({ graph: `019a2e1a-9454-7791-9370-d51e9782e4e8`, nodeTitle: "Database Design", enrichment: `enrichment:type-A` })
+  Result: Node created with ID: `019a2e1a-949e-7da7-b2ff-87680b3f4b28`
+- Action: addNode({ graph: `019a2e1a-9454-7791-9370-d51e9782e4e8`, nodeTitle: "API Implementation", enrichment: `enrichment:type-B` })
+  Result: Node created with ID: `019a2e1a-94e6-7894-b1f2-dcae88751580`
+- Action: addNode({ graph: `019a2e1a-9454-7791-9370-d51e9782e4e8`, nodeTitle: "Frontend Development", enrichment: `enrichment:type-C` })
+  Result: Node created with ID: `019a2e1a-952d-7047-9f62-c8da2f4a3d16`
 
 ## 3. User adds edges between nodes
-- Action: addEdge({ sourceNode: `019a2e07-b42c-779b-b404-7ffa7ff5881c`, targetNode: `019a2e07-b4be-7410-b1a3-89c55a0f14ff` })
-  Result: Edge created with ID: `019a2e07-b5e0-73d2-99b4-822e502984ea`
-- Action: addEdge({ sourceNode: `019a2e07-b4be-7410-b1a3-89c55a0f14ff`, targetNode: `019a2e07-b550-747f-8bad-998a4206d2d8` })
-  Result: Edge created with ID: `019a2e07-b688-737d-9720-8a264e231134`
+- Action: addEdge({ sourceNode: `019a2e1a-949e-7da7-b2ff-87680b3f4b28`, targetNode: `019a2e1a-94e6-7894-b1f2-dcae88751580` })
+  Result: Edge created with ID: `019a2e1a-959f-7836-a183-1e561b5392a4`
+- Action: addEdge({ sourceNode: `019a2e1a-94e6-7894-b1f2-dcae88751580`, targetNode: `019a2e1a-952d-7047-9f62-c8da2f4a3d16` })
+  Result: Edge created with ID: `019a2e1a-9632-712a-ad76-7db8bb2e39bd`
 
 ## 4. User changes a node title
-- Action: changeNodeTitle({ node: `019a2e07-b42c-779b-b404-7ffa7ff5881c`, newNodeTitle: "Database Schema Design" })
+- Action: changeNodeTitle({ node: `019a2e1a-949e-7da7-b2ff-87680b3f4b28`, newNodeTitle: "Database Schema Design" })
   Result: Title changed successfully
 
 ✅ Principle successfully demonstrated
@@ -82,7 +82,7 @@ Action: addEdge prevents cycle creation ...
 # Testing Cycle Detection in Edge Addition
 
 ## 1. Create graph and add nodes
-✓ Created graph: `019a2e07-b998-7da7-817d-d1c432a556db`
+✓ Created graph: `019a2e1a-9933-76a0-9892-d56378fdad0d`
 ✓ Created 3 nodes
 
 ## 2. Create a path: A → B → C
@@ -107,7 +107,7 @@ Action: node and edge removal ...
 ✓ Created graph with 3 nodes and 2 edges
 
 ## 2. Remove an edge
-✓ Removed edge: 019a2e07-bf8d-7daf-aa5c-0d36f2da6413 → 019a2e07-bfd9-71b6-a044-48f088197884
+✓ Removed edge: 019a2e1a-9ea7-7d21-8ed5-5aa684cf31c5 → 019a2e1a-9eef-7694-8c14-747f41096e53
 
 ## 3. Remove a node (should also remove its edges)
 ✓ Removed node 2
@@ -147,7 +147,7 @@ Action: addNode enforces unique titles within a graph ...
 ## 3. Different graph can have same title
 ✓ Created node with 'Task A' in different graph
 ----- output end -----
-Action: addNode enforces unique titles within a graph ... ok (875ms)
+Action: addNode enforces unique titles within a graph ... ok (865ms)
 Action: changeNodeTitle validates uniqueness ...
 ------- output -------
 
@@ -165,7 +165,7 @@ Action: changeNodeTitle validates uniqueness ...
 ## 4. Try to change non-existent node
 ✗ Failed as expected
 ----- output end -----
-Action: changeNodeTitle validates uniqueness ... ok (888ms)
+Action: changeNodeTitle validates uniqueness ... ok (844ms)
 Action: accessEdge and edge queries ...
 ------- output -------
 
@@ -175,7 +175,7 @@ Action: accessEdge and edge queries ...
 ✓ Created graph with 3 nodes and 2 edges
 
 ## 2. Access existing edge
-✓ Retrieved edge: `019a2e07-d18a-789c-a323-54618ef87278`
+✓ Retrieved edge: `019a2e1a-afe8-7aee-a508-f489a88401b5`
 
 ## 3. Query outgoing edges from node 2
 ✓ Found 1 outgoing edge(s)
@@ -187,5 +187,36 @@ Action: accessEdge and edge queries ...
 ✗ Failed as expected
 ----- output end -----
 Action: accessEdge and edge queries ... ok (1s)
+Action: suggestNodeTitle generates AI suggestions ...
+------- output -------
 
-ok | 7 passed | 0 failed (8s)
+# Testing AI Node Title Suggestions
+
+## 1. Create graph with nodes
+✓ Created graph with 3 nodes
+
+## 2. Get AI title suggestion
+✓ Suggested title: "Business Logic Layer"
+✓ Suggested title is valid and doesn't conflict
+
+## 3. Test suggestion with empty graph (fallback)
+✓ Fallback suggestion generated
+----- output end -----
+Action: suggestNodeTitle generates AI suggestions ... ok (1s)
+Action: suggestEdge generates AI edge suggestions ...
+------- output -------
+
+# Testing AI Edge Suggestions
+
+## 1. Create graph with nodes and edges
+✓ Created graph with 3 nodes and 1 edge
+
+## 2. Get AI edge suggestion
+✓ Suggested edge: `019a2e1a-bb76-799d-9d2b-6a408f6b83a5` → `019a2e1a-bbb6-7e02-aac6-1598c69300f4`
+  Reasonable: true
+
+## 3. Try to add the suggested edge
+✓ Successfully added suggested edge
+
+## 4. Test edge suggestion with insufficient nodes
+✓ Edge suggestion returns when insufficient nodes (reasonable=false)
