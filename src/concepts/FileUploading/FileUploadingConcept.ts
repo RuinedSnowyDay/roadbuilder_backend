@@ -92,7 +92,8 @@ export default class FileUploadingConcept {
 
     try {
       const extension = extname(filename);
-      const inferredContentType = contentType(extension) || "application/octet-stream";
+      const inferredContentType = contentType(extension) ||
+        "application/octet-stream";
       const options = {
         version: "v4" as const,
         action: "write" as const,
@@ -120,7 +121,7 @@ export default class FileUploadingConcept {
    */
   async confirmUpload(
     { file }: { file: File },
-  ): Promise<{ file:File } | { error: string }> {
+  ): Promise<{ file: File } | { error: string }> {
     const fileRecord = await this.files.findOne({ _id: file });
 
     if (!fileRecord) {
@@ -188,15 +189,19 @@ export default class FileUploadingConcept {
     });
     return fileRecord ? [{ owner: fileRecord.owner }] : [];
   }
-  
+
   /**
    * _getFilename (file: File): (filename: String)
    *
    * **requires**: the given `file` exists.
    * **effects**: returns the filename of the file.
    */
-  async _getFilename({ file }: { file: File }): Promise<{ filename: string }[]> {
-    const fileRecord = await this.files.findOne({ _id: file }, { projection: { filename: 1 } });
+  async _getFilename(
+    { file }: { file: File },
+  ): Promise<{ filename: string }[]> {
+    const fileRecord = await this.files.findOne({ _id: file }, {
+      projection: { filename: 1 },
+    });
     return fileRecord ? [{ filename: fileRecord.filename }] : [];
   }
 
