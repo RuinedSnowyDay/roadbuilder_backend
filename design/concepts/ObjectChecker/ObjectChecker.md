@@ -12,7 +12,8 @@ can mark the same object without affecting each other's state.
     + a checked Boolean
 + **actions**
   + createCheck(user: User, object: Object) : (newCheck: Check)
-    + **requires** there is no Check with the same user and object in the set of Checks
+    + **requires** there is no Check with the same user and object in the set of
+      Checks
     + **effects** adds a new Check with provided user, object, checked set to false.
   + markObject(check: Check)
     + **requires** check is in the set of Checks
