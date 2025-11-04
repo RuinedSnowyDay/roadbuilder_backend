@@ -55,6 +55,15 @@
     + **requires** resourceList is in the set of ResourceLists, index1 and index2 are
       non-negative integers less than the length of the ResourceList
     + **effects** swaps the IndexedResources at the provided indices in the ResourceList.
+  + moveResource(resourceList: ResourceList, oldIndex: Number, newIndex: Number)
+    + **requires** resourceList is in the set of ResourceLists, oldIndex and newIndex are
+      non-negative integers less than the length of the ResourceList, and newIndex is not
+      equal to oldIndex
+    + **effects** changes the index of the IndexedResource at the provided oldIndex to the
+      provided newIndex in the ResourceList. Increments the indices of all IndexedResources
+      with list being provided resourceList and index greater than or equal to provided
+      newIndex by 1. Decrements the indices of all IndexedResources with list being provided
+      resourceList and index greater than provided oldIndex by 1.
   + deleteResourceList(resourceList: ResourceList)
     + **requires** resourceList is in the set of ResourceLists
     + **effects** removes the ResourceList from the set of ResourceLists. Also removes all
