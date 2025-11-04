@@ -272,6 +272,77 @@ export default class ResourceListConcept {
   }
 
   /**
+   * Action: Moves a resource from one index to another in a list.
+   * @requires ResourceList is in the set of ResourceLists, oldIndex and newIndex are non-negative integers less than the length of the ResourceList, and newIndex is not equal to oldIndex.
+   * @effects Changes the index of the IndexedResource at the provided oldIndex to the provided newIndex. Increments the indices of all IndexedResources with list being provided resourceList and index greater than or equal to provided newIndex by 1. Decrements the indices of all IndexedResources with list being provided resourceList and index greater than provided oldIndex by 1.
+   */
+  async moveResource(
+    { resourceList, oldIndex, newIndex }: {
+      resourceList: ResourceList;
+      oldIndex: number;
+      newIndex: number;
+    },
+  ): Promise<Empty | { error: string }> {
+    const list = await this.resourceLists.findOne({ _id: resourceList });
+    if (!list) {
+      return { error: "Resource list not found" };
+    }
+
+    if (
+      oldIndex < 0 || oldIndex >= list.length || newIndex < 0 ||
+      newIndex >= list.length
+    ) {
+      return { error: "Index out of bounds" };
+    }
+
+    if (oldIndex === newIndex) {
+      return { error: "oldIndex and newIndex must be different" };
+    }
+
+    // Get the resource to move
+    const resourceToMove = await this.indexedResources.findOne({
+      list: resourceList,
+      index: oldIndex,
+    });
+
+    if (!resourceToMove) {
+      return { error: "Resource not found at oldIndex" };
+    }
+
+    if (oldIndex < newIndex) {
+      // Moving forward: decrement indices between oldIndex and newIndex
+      await this.indexedResources.updateMany(
+        {
+          list: resourceList,
+          index: { $gt: oldIndex, $lte: newIndex },
+        },
+        { $inc: { index: -1 } },
+      );
+      // Set the moved resource to newIndex
+      await this.indexedResources.updateOne(
+        { _id: resourceToMove._id },
+        { $set: { index: newIndex } },
+      );
+    } else {
+      // Moving backward: increment indices between newIndex and oldIndex
+      await this.indexedResources.updateMany(
+        {
+          list: resourceList,
+          index: { $gte: newIndex, $lt: oldIndex },
+        },
+        { $inc: { index: 1 } },
+      );
+      // Set the moved resource to newIndex
+      await this.indexedResources.updateOne(
+        { _id: resourceToMove._id },
+        { $set: { index: newIndex } },
+      );
+    }
+
+    return {};
+  }
+
+  /**
    * Action: Deletes a resource list.
    * @requires ResourceList is in the set of ResourceLists.
    * @effects Removes the ResourceList from the set of ResourceLists. Also removes all IndexedResources associated with the ResourceList from the set of IndexedResources.

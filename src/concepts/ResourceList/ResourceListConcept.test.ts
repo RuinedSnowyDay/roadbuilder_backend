@@ -760,3 +760,249 @@ Deno.test("Action: appendResource increments list length", async () => {
     await client.close();
   }
 });
+
+Deno.test("Action: moveResource moves resources correctly", async () => {
+  const [db, client] = await testDb();
+  const resourceListConcept = new ResourceListConcept(db);
+
+  try {
+    console.log("\n# Testing Resource Movement");
+
+    // Setup
+    console.log("\n## 1. Create list with 5 resources");
+    const { newResourceList } = (await resourceListConcept.createResourceList({
+      owner: userA,
+      listTitle: "Move Test",
+    })) as { newResourceList: ID };
+
+    await resourceListConcept.appendResource({
+      resourceList: newResourceList,
+      resource: resource1,
+      resourceTitle: "First",
+    });
+    await resourceListConcept.appendResource({
+      resourceList: newResourceList,
+      resource: resource2,
+      resourceTitle: "Second",
+    });
+    await resourceListConcept.appendResource({
+      resourceList: newResourceList,
+      resource: resource3,
+      resourceTitle: "Third",
+    });
+    await resourceListConcept.appendResource({
+      resourceList: newResourceList,
+      resource: resource4,
+      resourceTitle: "Fourth",
+    });
+    await resourceListConcept.appendResource({
+      resourceList: newResourceList,
+      resource: resource5,
+      resourceTitle: "Fifth",
+    });
+
+    let resources = await resourceListConcept._getListResources({
+      resourceList: newResourceList,
+    });
+    assertEquals(resources.length, 5, "Should have 5 resources");
+    console.log("✓ Created list with 5 resources at indices 0-4");
+
+    // Verify initial order
+    assertEquals(
+      resources[0].resource,
+      resource1,
+      "Should start with resource1",
+    );
+    assertEquals(
+      resources[4].resource,
+      resource5,
+      "Should end with resource5",
+    );
+
+    // Move forward (from index 1 to index 3)
+    console.log("\n## 2. Move resource forward (index 1 to 3)");
+    const moveForwardResult = await resourceListConcept.moveResource({
+      resourceList: newResourceList,
+      oldIndex: 1,
+      newIndex: 3,
+    });
+    assertEquals(
+      "error" in moveForwardResult,
+      false,
+      "Moving resource forward should succeed",
+    );
+    console.log("✓ Moved resource from index 1 to 3");
+
+    // Verify move forward
+    resources = await resourceListConcept._getListResources({
+      resourceList: newResourceList,
+    });
+    assertEquals(
+      resources[0].resource,
+      resource1,
+      "Index 0 should still have resource1",
+    );
+    assertEquals(
+      resources[0].index,
+      0,
+      "Index 0 should be correct",
+    );
+    assertEquals(
+      resources[1].resource,
+      resource3,
+      "Index 1 should now have resource3 (shifted from 2)",
+    );
+    assertEquals(
+      resources[1].index,
+      1,
+      "Index 1 should be correct",
+    );
+    assertEquals(
+      resources[2].resource,
+      resource4,
+      "Index 2 should now have resource4 (shifted from 3)",
+    );
+    assertEquals(
+      resources[2].index,
+      2,
+      "Index 2 should be correct",
+    );
+    assertEquals(
+      resources[3].resource,
+      resource2,
+      "Index 3 should now have resource2 (moved from 1)",
+    );
+    assertEquals(
+      resources[3].index,
+      3,
+      "Index 3 should be correct",
+    );
+    assertEquals(
+      resources[4].resource,
+      resource5,
+      "Index 4 should still have resource5",
+    );
+    assertEquals(
+      resources[4].index,
+      4,
+      "Index 4 should be correct",
+    );
+    console.log("✓ Verified forward move: [1,3,4,2,5]");
+
+    // Move backward (from index 3 to index 1)
+    console.log("\n## 3. Move resource backward (index 3 to 1)");
+    const moveBackwardResult = await resourceListConcept.moveResource({
+      resourceList: newResourceList,
+      oldIndex: 3,
+      newIndex: 1,
+    });
+    assertEquals(
+      "error" in moveBackwardResult,
+      false,
+      "Moving resource backward should succeed",
+    );
+    console.log("✓ Moved resource from index 3 to 1");
+
+    // Verify move backward
+    resources = await resourceListConcept._getListResources({
+      resourceList: newResourceList,
+    });
+    assertEquals(
+      resources[0].resource,
+      resource1,
+      "Index 0 should still have resource1",
+    );
+    assertEquals(
+      resources[1].resource,
+      resource2,
+      "Index 1 should now have resource2 (moved from 3)",
+    );
+    assertEquals(
+      resources[1].index,
+      1,
+      "Index 1 should be correct",
+    );
+    assertEquals(
+      resources[2].resource,
+      resource3,
+      "Index 2 should now have resource3 (shifted from 1)",
+    );
+    assertEquals(
+      resources[2].index,
+      2,
+      "Index 2 should be correct",
+    );
+    assertEquals(
+      resources[3].resource,
+      resource4,
+      "Index 3 should now have resource4 (shifted from 2)",
+    );
+    assertEquals(
+      resources[3].index,
+      3,
+      "Index 3 should be correct",
+    );
+    assertEquals(
+      resources[4].resource,
+      resource5,
+      "Index 4 should still have resource5",
+    );
+    console.log("✓ Verified backward move: [1,2,3,4,5] - back to original order");
+
+    // Test invalid indices
+    console.log("\n## 4. Test invalid indices");
+    const negativeResult = await resourceListConcept.moveResource({
+      resourceList: newResourceList,
+      oldIndex: -1,
+      newIndex: 2,
+    });
+    assertEquals(
+      "error" in negativeResult,
+      true,
+      "Should fail - negative index",
+    );
+    console.log("✗ Failed as expected (negative index)");
+
+    const outOfBoundsResult = await resourceListConcept.moveResource({
+      resourceList: newResourceList,
+      oldIndex: 0,
+      newIndex: 10,
+    });
+    assertEquals(
+      "error" in outOfBoundsResult,
+      true,
+      "Should fail - index out of bounds",
+    );
+    console.log("✗ Failed as expected (index out of bounds)");
+
+    // Test same index
+    console.log("\n## 5. Test same index");
+    const sameIndexResult = await resourceListConcept.moveResource({
+      resourceList: newResourceList,
+      oldIndex: 2,
+      newIndex: 2,
+    });
+    assertEquals(
+      "error" in sameIndexResult,
+      true,
+      "Should fail - same index",
+    );
+    console.log("✗ Failed as expected (same index)");
+
+    // Test non-existent list
+    console.log("\n## 6. Test non-existent list");
+    const nonexistentResult = await resourceListConcept.moveResource({
+      resourceList: "fake:list" as ID,
+      oldIndex: 0,
+      newIndex: 1,
+    });
+    assertEquals(
+      "error" in nonexistentResult,
+      true,
+      "Should fail - list doesn't exist",
+    );
+    console.log("✗ Failed as expected (list not found)");
+  } finally {
+    await client.close();
+  }
+});

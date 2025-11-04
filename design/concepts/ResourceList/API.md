@@ -248,6 +248,43 @@
 
 ---
 
+### POST /api/ResourceList/moveResource
+
+**Description:** Moves a resource from one index to another in a list, automatically adjusting the indices of other resources.
+
+**Requirements:**
+- resourceList is in the set of ResourceLists
+- oldIndex and newIndex are non-negative integers less than the length of the ResourceList
+- newIndex is not equal to oldIndex
+
+**Effects:**
+- Changes the index of the IndexedResource at the provided oldIndex to the provided newIndex in the ResourceList
+- Increments the indices of all IndexedResources with list being provided resourceList and index greater than or equal to provided newIndex by 1
+- Decrements the indices of all IndexedResources with list being provided resourceList and index greater than provided oldIndex by 1
+
+**Request Body:**
+```json
+{
+  "resourceList": "ID",
+  "oldIndex": "number",
+  "newIndex": "number"
+}
+```
+
+**Success Response Body (Action):**
+```json
+{}
+```
+
+**Error Response Body:**
+```json
+{
+  "error": "string"
+}
+```
+
+---
+
 ### POST /api/ResourceList/deleteResourceList
 
 **Description:** Deletes a resource list and all its associated resources.
