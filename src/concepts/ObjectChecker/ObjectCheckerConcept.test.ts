@@ -1,5 +1,5 @@
 import { assertEquals, assertExists, assertNotEquals } from "jsr:@std/assert";
-import { testDb } from "@utils/database.ts";
+import { testDb, closeTestClient } from "@utils/database.ts";
 import { ID } from "@utils/types.ts";
 import ObjectCheckerConcept from "./ObjectCheckerConcept.ts";
 
@@ -134,7 +134,7 @@ Deno.test(
 
       console.log("\n✅ Principle successfully demonstrated");
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -212,7 +212,7 @@ Deno.test(
         `✓ Created: user="${userB}", object="${object1}" (different user OK)`,
       );
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -350,7 +350,7 @@ Deno.test(
       assertEquals(check?.checked, true, "Should be marked again");
       console.log(`✓ Successfully toggled check state multiple times`);
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -426,7 +426,7 @@ Deno.test(
         `✗ Failed as expected: ${(markDeletedResult as { error: string }).error}`,
       );
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -552,7 +552,7 @@ Deno.test(
         `✗ Failed as expected: ${(deleteInvalidResult as { error: string }).error}`,
       );
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -743,7 +743,7 @@ Deno.test(
 
       console.log("\n✅ Independence of user states successfully demonstrated");
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );

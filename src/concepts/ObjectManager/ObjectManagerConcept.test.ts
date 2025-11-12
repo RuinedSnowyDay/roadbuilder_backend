@@ -1,5 +1,5 @@
 import { assertEquals, assertExists, assertNotEquals } from "jsr:@std/assert";
-import { testDb } from "@utils/database.ts";
+import { testDb, closeTestClient } from "@utils/database.ts";
 import { ID } from "@utils/types.ts";
 import ObjectManagerConcept from "./ObjectManagerConcept.ts";
 
@@ -123,7 +123,7 @@ Deno.test(
 
       console.log("\n✅ Principle successfully demonstrated");
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -174,7 +174,7 @@ Deno.test(
         `  Error: ${(create2Result as { error: string }).error}`,
       );
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -237,7 +237,7 @@ Deno.test(
         `✓ Created: owner="${userB}", title="My Book" (different user OK)`,
       );
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -341,7 +341,7 @@ Deno.test("Action: deleteAssignedObject and lifecycle", async () => {
     );
     console.log(`✓ Recreated: object="${object2}" with new title`);
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -412,7 +412,7 @@ Deno.test("Action: changeAssignedObjectTitle with validation", async () => {
     );
     console.log("✗ Failed as expected: object doesn't exist");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -486,7 +486,7 @@ Deno.test("Action: suggestTitle async behavior", async () => {
     );
     console.log(`✓ Suggested title is valid and doesn't conflict`);
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -548,6 +548,6 @@ Deno.test("Action: changeAssignedObjectDescription", async () => {
     );
     console.log("✗ Failed as expected");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });

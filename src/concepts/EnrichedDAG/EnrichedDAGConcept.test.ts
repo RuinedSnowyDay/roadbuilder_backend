@@ -1,5 +1,5 @@
 import { assertEquals, assertExists, assertNotEquals } from "jsr:@std/assert";
-import { testDb } from "@utils/database.ts";
+import { testDb, closeTestClient } from "@utils/database.ts";
 import { ID } from "@utils/types.ts";
 import { GeminiLLM } from "@utils/gemini-llm.ts";
 import EnrichedDAGConcept from "./EnrichedDAGConcept.ts";
@@ -157,7 +157,7 @@ Deno.test(
       assertEquals(edges.length, 2, "Should have 2 edges");
       console.log("\n✅ Principle successfully demonstrated");
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -257,7 +257,7 @@ Deno.test("Action: addEdge prevents cycle creation", async () => {
       `✗ Failed as expected: ${(selfLoopResult as { error: string }).error}`,
     );
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -354,7 +354,7 @@ Deno.test("Action: node and edge removal", async () => {
     );
     console.log("✗ Failed as expected");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -439,7 +439,7 @@ Deno.test("Action: deleteGraph removes all associated nodes and edges", async ()
     );
     console.log("✗ Failed as expected");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -499,7 +499,7 @@ Deno.test("Action: addNode enforces unique titles within a graph", async () => {
     );
     console.log("✓ Created node with 'Task A' in different graph");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -575,7 +575,7 @@ Deno.test("Action: changeNodeTitle validates uniqueness", async () => {
     );
     console.log("✗ Failed as expected");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -673,7 +673,7 @@ Deno.test("Action: accessEdge and edge queries", async () => {
     );
     console.log("✗ Failed as expected");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -771,7 +771,7 @@ Deno.test("Action: suggestNodeTitle generates AI suggestions", async () => {
     );
     console.log(`✓ Fallback suggestion generated`);
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -888,6 +888,6 @@ Deno.test("Action: suggestEdge generates AI edge suggestions", async () => {
       "✓ Edge suggestion returns when insufficient nodes (reasonable=false)",
     );
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });

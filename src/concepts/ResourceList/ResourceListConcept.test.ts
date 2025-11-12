@@ -1,5 +1,5 @@
 import { assertEquals, assertExists, assertNotEquals } from "jsr:@std/assert";
-import { testDb } from "@utils/database.ts";
+import { testDb, closeTestClient } from "@utils/database.ts";
 import { ID } from "@utils/types.ts";
 import ResourceListConcept from "./ResourceListConcept.ts";
 
@@ -176,7 +176,7 @@ Deno.test(
 
       console.log("\n✅ Principle successfully demonstrated");
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -285,7 +285,7 @@ Deno.test("Action: deleteResource re-indexes remaining resources", async () => {
     );
     console.log("✗ Failed as expected (index out of bounds)");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -404,7 +404,7 @@ Deno.test("Action: swapResources exchanges resources correctly", async () => {
     );
     console.log("✗ Failed as expected (index out of bounds)");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -467,7 +467,7 @@ Deno.test("Action: createResourceList enforces unique titles per user", async ()
     assertEquals(userBLists.length, 1, "Bob should have 1 list");
     console.log("✓ Both users have their own lists");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -565,7 +565,7 @@ Deno.test("Action: deleteResourceList removes associated resources", async () =>
     );
     console.log("✗ Failed as expected");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -686,7 +686,7 @@ Deno.test(
       );
       console.log("✗ Failed as expected");
     } finally {
-      await client.close();
+      await closeTestClient(client);
     }
   },
 );
@@ -757,7 +757,7 @@ Deno.test("Action: appendResource increments list length", async () => {
     assertEquals(resources[2].index, 2, "Third resource should be at index 2");
     console.log("✓ All resources have correct indices");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
 
@@ -1003,6 +1003,6 @@ Deno.test("Action: moveResource moves resources correctly", async () => {
     );
     console.log("✗ Failed as expected (list not found)");
   } finally {
-    await client.close();
+    await closeTestClient(client);
   }
 });
