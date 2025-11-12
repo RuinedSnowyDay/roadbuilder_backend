@@ -17,16 +17,28 @@ export const RequestUploadURLRequest: Sync = (
   then: actions([FileUploading.requestUploadURL, { owner: user, filename }]),
 });
 
-export const RequestUploadURLResponse: Sync = (
-  { request, file, uploadURL, error },
+export const RequestUploadURLSuccessResponse: Sync = (
+  { request, file, uploadURL },
 ) => ({
   when: actions(
     [Requesting.request, { path: "/FileUploading/requestUploadURL" }, {
       request,
     }],
-    [FileUploading.requestUploadURL, {}, { file, uploadURL, error }],
+    [FileUploading.requestUploadURL, {}, { file, uploadURL }],
   ),
-  then: actions([Requesting.respond, { request, file, uploadURL, error }]),
+  then: actions([Requesting.respond, { request, file, uploadURL }]),
+});
+
+export const RequestUploadURLErrorResponse: Sync = (
+  { request, error },
+) => ({
+  when: actions(
+    [Requesting.request, { path: "/FileUploading/requestUploadURL" }, {
+      request,
+    }],
+    [FileUploading.requestUploadURL, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Confirm Upload ---
@@ -45,14 +57,24 @@ export const ConfirmUploadRequest: Sync = (
   then: actions([FileUploading.confirmUpload, { file }]),
 });
 
-export const ConfirmUploadResponse: Sync = (
-  { request, file: responseFile, error },
+export const ConfirmUploadSuccessResponse: Sync = (
+  { request, file: responseFile },
 ) => ({
   when: actions(
     [Requesting.request, { path: "/FileUploading/confirmUpload" }, { request }],
-    [FileUploading.confirmUpload, {}, { file: responseFile, error }],
+    [FileUploading.confirmUpload, {}, { file: responseFile }],
   ),
-  then: actions([Requesting.respond, { request, file: responseFile, error }]),
+  then: actions([Requesting.respond, { request, file: responseFile }]),
+});
+
+export const ConfirmUploadErrorResponse: Sync = (
+  { request, error },
+) => ({
+  when: actions(
+    [Requesting.request, { path: "/FileUploading/confirmUpload" }, { request }],
+    [FileUploading.confirmUpload, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Delete File ---

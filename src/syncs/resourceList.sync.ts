@@ -15,12 +15,20 @@ export const CreateResourceListRequest: Sync = ({ request, session, listTitle, u
   then: actions([ResourceList.createResourceList, { owner: user, listTitle }]),
 });
 
-export const CreateResourceListResponse: Sync = ({ request, newResourceList, error }) => ({
+export const CreateResourceListSuccessResponse: Sync = ({ request, newResourceList }) => ({
   when: actions(
     [Requesting.request, { path: "/ResourceList/createResourceList" }, { request }],
-    [ResourceList.createResourceList, {}, { newResourceList, error }],
+    [ResourceList.createResourceList, {}, { newResourceList }],
   ),
-  then: actions([Requesting.respond, { request, newResourceList, error }]),
+  then: actions([Requesting.respond, { request, newResourceList }]),
+});
+
+export const CreateResourceListErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/createResourceList" }, { request }],
+    [ResourceList.createResourceList, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Access Resource List ---
@@ -37,12 +45,20 @@ export const AccessResourceListRequest: Sync = ({ request, session, listTitle, u
   then: actions([ResourceList.accessResourceList, { owner: user, listTitle }]),
 });
 
-export const AccessResourceListResponse: Sync = ({ request, accessedResourceList, error }) => ({
+export const AccessResourceListSuccessResponse: Sync = ({ request, accessedResourceList }) => ({
   when: actions(
     [Requesting.request, { path: "/ResourceList/accessResourceList" }, { request }],
-    [ResourceList.accessResourceList, {}, { accessedResourceList, error }],
+    [ResourceList.accessResourceList, {}, { accessedResourceList }],
   ),
-  then: actions([Requesting.respond, { request, accessedResourceList, error }]),
+  then: actions([Requesting.respond, { request, accessedResourceList }]),
+});
+
+export const AccessResourceListErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/accessResourceList" }, { request }],
+    [ResourceList.accessResourceList, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Rename Resource List ---
@@ -81,12 +97,20 @@ export const AppendResourceRequest: Sync = ({ request, session, resourceList, re
   then: actions([ResourceList.appendResource, { resourceList, resource, resourceTitle }]),
 });
 
-export const AppendResourceResponse: Sync = ({ request, newIndexedResource, error }) => ({
+export const AppendResourceSuccessResponse: Sync = ({ request, newIndexedResource }) => ({
   when: actions(
     [Requesting.request, { path: "/ResourceList/appendResource" }, { request }],
-    [ResourceList.appendResource, {}, { newIndexedResource, error }],
+    [ResourceList.appendResource, {}, { newIndexedResource }],
   ),
-  then: actions([Requesting.respond, { request, newIndexedResource, error }]),
+  then: actions([Requesting.respond, { request, newIndexedResource }]),
+});
+
+export const AppendResourceErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/appendResource" }, { request }],
+    [ResourceList.appendResource, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Access Resource ---
@@ -103,12 +127,20 @@ export const AccessResourceRequest: Sync = ({ request, session, resourceList, in
   then: actions([ResourceList.accessResource, { resourceList, index }]),
 });
 
-export const AccessResourceResponse: Sync = ({ request, accessedIndexedResource, error }) => ({
+export const AccessResourceSuccessResponse: Sync = ({ request, accessedIndexedResource }) => ({
   when: actions(
     [Requesting.request, { path: "/ResourceList/accessResource" }, { request }],
-    [ResourceList.accessResource, {}, { accessedIndexedResource, error }],
+    [ResourceList.accessResource, {}, { accessedIndexedResource }],
   ),
-  then: actions([Requesting.respond, { request, accessedIndexedResource, error }]),
+  then: actions([Requesting.respond, { request, accessedIndexedResource }]),
+});
+
+export const AccessResourceErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/accessResource" }, { request }],
+    [ResourceList.accessResource, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Delete Resource ---

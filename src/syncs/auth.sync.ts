@@ -5,7 +5,9 @@ import { Requesting, Sessioning, UserAuthentication } from "@concepts";
  * @sync UserRegistrationRequest
  * @description Triggers user registration when a request is made.
  */
-export const UserRegistrationRequest: Sync = ({ request, username, password }) => ({
+export const UserRegistrationRequest: Sync = (
+  { request, username, password },
+) => ({
   when: actions([
     Requesting.request,
     { path: "/UserAuthentication/register", username, password },
@@ -18,15 +20,27 @@ export const UserRegistrationRequest: Sync = ({ request, username, password }) =
 });
 
 /**
- * @sync UserRegistrationResponse
- * @description Responds to the registration request with the new user's ID or an error.
+ * @sync UserRegistrationSuccessResponse
+ * @description Responds to the registration request with the new user's ID on success.
  */
-export const UserRegistrationResponse: Sync = ({ request, user, error }) => ({
+export const UserRegistrationSuccessResponse: Sync = ({ request, user }) => ({
   when: actions(
     [Requesting.request, { path: "/UserAuthentication/register" }, { request }],
-    [UserAuthentication.register, {}, { user, error }],
+    [UserAuthentication.register, {}, { user }],
   ),
-  then: actions([Requesting.respond, { request, user, error }]),
+  then: actions([Requesting.respond, { request, user }]),
+});
+
+/**
+ * @sync UserRegistrationErrorResponse
+ * @description Responds to the registration request with an error if registration fails.
+ */
+export const UserRegistrationErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/UserAuthentication/register" }, { request }],
+    [UserAuthentication.register, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 /**
@@ -104,4 +118,3 @@ export const UserLogoutResponse: Sync = ({ request, error }) => ({
   ),
   then: actions([Requesting.respond, { request, error }]),
 });
-

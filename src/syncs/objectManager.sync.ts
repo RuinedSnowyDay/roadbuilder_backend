@@ -20,12 +20,20 @@ export const CreateAssignedObjectRequest: Sync = (
   ]),
 });
 
-export const CreateAssignedObjectResponse: Sync = ({ request, assignedObject, error }) => ({
+export const CreateAssignedObjectSuccessResponse: Sync = ({ request, assignedObject }) => ({
   when: actions(
     [Requesting.request, { path: "/ObjectManager/createAssignedObject" }, { request }],
-    [ObjectManager.createAssignedObject, {}, { assignedObject, error }],
+    [ObjectManager.createAssignedObject, {}, { assignedObject }],
   ),
-  then: actions([Requesting.respond, { request, assignedObject, error }]),
+  then: actions([Requesting.respond, { request, assignedObject }]),
+});
+
+export const CreateAssignedObjectErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ObjectManager/createAssignedObject" }, { request }],
+    [ObjectManager.createAssignedObject, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Access Object ---
@@ -42,12 +50,20 @@ export const AccessObjectRequest: Sync = ({ request, session, title, user }) => 
   then: actions([ObjectManager.accessObject, { owner: user, title }]),
 });
 
-export const AccessObjectResponse: Sync = ({ request, object, error }) => ({
+export const AccessObjectSuccessResponse: Sync = ({ request, object }) => ({
   when: actions(
     [Requesting.request, { path: "/ObjectManager/accessObject" }, { request }],
-    [ObjectManager.accessObject, {}, { object, error }],
+    [ObjectManager.accessObject, {}, { object }],
   ),
-  then: actions([Requesting.respond, { request, object, error }]),
+  then: actions([Requesting.respond, { request, object }]),
+});
+
+export const AccessObjectErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ObjectManager/accessObject" }, { request }],
+    [ObjectManager.accessObject, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Delete Assigned Object ---
@@ -148,12 +164,20 @@ export const SuggestTitleRequest: Sync = ({ request, session, user }) => ({
   then: actions([ObjectManager.suggestTitle, { owner: user }]),
 });
 
-export const SuggestTitleResponse: Sync = ({ request, titleSuggestion, error }) => ({
+export const SuggestTitleSuccessResponse: Sync = ({ request, titleSuggestion }) => ({
   when: actions(
     [Requesting.request, { path: "/ObjectManager/suggestTitle" }, { request }],
-    [ObjectManager.suggestTitle, {}, { titleSuggestion, error }],
+    [ObjectManager.suggestTitle, {}, { titleSuggestion }],
   ),
-  then: actions([Requesting.respond, { request, titleSuggestion, error }]),
+  then: actions([Requesting.respond, { request, titleSuggestion }]),
+});
+
+export const SuggestTitleErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ObjectManager/suggestTitle" }, { request }],
+    [ObjectManager.suggestTitle, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Get User's Assigned Objects (Query) ---

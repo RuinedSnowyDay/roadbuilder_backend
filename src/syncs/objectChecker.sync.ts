@@ -15,12 +15,20 @@ export const CreateCheckRequest: Sync = ({ request, session, object, user }) => 
   then: actions([ObjectChecker.createCheck, { user, object }]),
 });
 
-export const CreateCheckResponse: Sync = ({ request, newCheck, error }) => ({
+export const CreateCheckSuccessResponse: Sync = ({ request, newCheck }) => ({
   when: actions(
     [Requesting.request, { path: "/ObjectChecker/createCheck" }, { request }],
-    [ObjectChecker.createCheck, {}, { newCheck, error }],
+    [ObjectChecker.createCheck, {}, { newCheck }],
   ),
-  then: actions([Requesting.respond, { request, newCheck, error }]),
+  then: actions([Requesting.respond, { request, newCheck }]),
+});
+
+export const CreateCheckErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ObjectChecker/createCheck" }, { request }],
+    [ObjectChecker.createCheck, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Mark Object ---

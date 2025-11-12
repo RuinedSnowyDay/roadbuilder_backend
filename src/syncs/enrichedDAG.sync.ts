@@ -15,12 +15,20 @@ export const CreateEmptyGraphRequest: Sync = ({ request, session, graphTitle, us
   then: actions([EnrichedDAG.createEmptyGraph, { owner: user, graphTitle }]),
 });
 
-export const CreateEmptyGraphResponse: Sync = ({ request, newGraph, error }) => ({
+export const CreateEmptyGraphSuccessResponse: Sync = ({ request, newGraph }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/createEmptyGraph" }, { request }],
-    [EnrichedDAG.createEmptyGraph, {}, { newGraph, error }],
+    [EnrichedDAG.createEmptyGraph, {}, { newGraph }],
   ),
-  then: actions([Requesting.respond, { request, newGraph, error }]),
+  then: actions([Requesting.respond, { request, newGraph }]),
+});
+
+export const CreateEmptyGraphErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/createEmptyGraph" }, { request }],
+    [EnrichedDAG.createEmptyGraph, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Access Graph ---
@@ -37,12 +45,20 @@ export const AccessGraphRequest: Sync = ({ request, session, graphTitle, user })
   then: actions([EnrichedDAG.accessGraph, { owner: user, graphTitle }]),
 });
 
-export const AccessGraphResponse: Sync = ({ request, accessedGraph, error }) => ({
+export const AccessGraphSuccessResponse: Sync = ({ request, accessedGraph }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/accessGraph" }, { request }],
-    [EnrichedDAG.accessGraph, {}, { accessedGraph, error }],
+    [EnrichedDAG.accessGraph, {}, { accessedGraph }],
   ),
-  then: actions([Requesting.respond, { request, accessedGraph, error }]),
+  then: actions([Requesting.respond, { request, accessedGraph }]),
+});
+
+export const AccessGraphErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/accessGraph" }, { request }],
+    [EnrichedDAG.accessGraph, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Add Node ---
@@ -59,12 +75,20 @@ export const AddNodeRequest: Sync = ({ request, session, graph, nodeTitle, enric
   then: actions([EnrichedDAG.addNode, { graph, nodeTitle, enrichment }]),
 });
 
-export const AddNodeResponse: Sync = ({ request, newNode, error }) => ({
+export const AddNodeSuccessResponse: Sync = ({ request, newNode }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/addNode" }, { request }],
-    [EnrichedDAG.addNode, {}, { newNode, error }],
+    [EnrichedDAG.addNode, {}, { newNode }],
   ),
-  then: actions([Requesting.respond, { request, newNode, error }]),
+  then: actions([Requesting.respond, { request, newNode }]),
+});
+
+export const AddNodeErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/addNode" }, { request }],
+    [EnrichedDAG.addNode, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Access Node ---
@@ -81,12 +105,20 @@ export const AccessNodeRequest: Sync = ({ request, session, graph, nodeTitle, us
   then: actions([EnrichedDAG.accessNode, { graph, nodeTitle }]),
 });
 
-export const AccessNodeResponse: Sync = ({ request, accessedNode, error }) => ({
+export const AccessNodeSuccessResponse: Sync = ({ request, accessedNode }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/accessNode" }, { request }],
-    [EnrichedDAG.accessNode, {}, { accessedNode, error }],
+    [EnrichedDAG.accessNode, {}, { accessedNode }],
   ),
-  then: actions([Requesting.respond, { request, accessedNode, error }]),
+  then: actions([Requesting.respond, { request, accessedNode }]),
+});
+
+export const AccessNodeErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/accessNode" }, { request }],
+    [EnrichedDAG.accessNode, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Change Node Title ---
@@ -125,12 +157,20 @@ export const AddEdgeRequest: Sync = ({ request, session, graph, sourceNode, targ
   then: actions([EnrichedDAG.addEdge, { graph, sourceNode, targetNode, enrichment }]),
 });
 
-export const AddEdgeResponse: Sync = ({ request, newEdge, error }) => ({
+export const AddEdgeSuccessResponse: Sync = ({ request, newEdge }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/addEdge" }, { request }],
-    [EnrichedDAG.addEdge, {}, { newEdge, error }],
+    [EnrichedDAG.addEdge, {}, { newEdge }],
   ),
-  then: actions([Requesting.respond, { request, newEdge, error }]),
+  then: actions([Requesting.respond, { request, newEdge }]),
+});
+
+export const AddEdgeErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/addEdge" }, { request }],
+    [EnrichedDAG.addEdge, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Access Edge ---
@@ -147,12 +187,20 @@ export const AccessEdgeRequest: Sync = ({ request, session, graph, sourceNode, t
   then: actions([EnrichedDAG.accessEdge, { graph, sourceNode, targetNode }]),
 });
 
-export const AccessEdgeResponse: Sync = ({ request, newEdge, error }) => ({
+export const AccessEdgeSuccessResponse: Sync = ({ request, newEdge }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/accessEdge" }, { request }],
-    [EnrichedDAG.accessEdge, {}, { newEdge, error }],
+    [EnrichedDAG.accessEdge, {}, { newEdge }],
   ),
-  then: actions([Requesting.respond, { request, newEdge, error }]),
+  then: actions([Requesting.respond, { request, newEdge }]),
+});
+
+export const AccessEdgeErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/accessEdge" }, { request }],
+    [EnrichedDAG.accessEdge, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Remove Node ---
@@ -235,12 +283,20 @@ export const SuggestNodeTitleRequest: Sync = ({ request, session, graph, user })
   then: actions([EnrichedDAG.suggestNodeTitle, { graph }]),
 });
 
-export const SuggestNodeTitleResponse: Sync = ({ request, suggestedNodeTitle, error }) => ({
+export const SuggestNodeTitleSuccessResponse: Sync = ({ request, suggestedNodeTitle }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/suggestNodeTitle" }, { request }],
-    [EnrichedDAG.suggestNodeTitle, {}, { suggestedNodeTitle, error }],
+    [EnrichedDAG.suggestNodeTitle, {}, { suggestedNodeTitle }],
   ),
-  then: actions([Requesting.respond, { request, suggestedNodeTitle, error }]),
+  then: actions([Requesting.respond, { request, suggestedNodeTitle }]),
+});
+
+export const SuggestNodeTitleErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/suggestNodeTitle" }, { request }],
+    [EnrichedDAG.suggestNodeTitle, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Suggest Edge ---
@@ -257,12 +313,20 @@ export const SuggestEdgeRequest: Sync = ({ request, session, graph, user }) => (
   then: actions([EnrichedDAG.suggestEdge, { graph }]),
 });
 
-export const SuggestEdgeResponse: Sync = ({ request, suggestedSourceNode, suggestedTargetNode, reasonable, error }) => ({
+export const SuggestEdgeSuccessResponse: Sync = ({ request, suggestedSourceNode, suggestedTargetNode, reasonable }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/suggestEdge" }, { request }],
-    [EnrichedDAG.suggestEdge, {}, { suggestedSourceNode, suggestedTargetNode, reasonable, error }],
+    [EnrichedDAG.suggestEdge, {}, { suggestedSourceNode, suggestedTargetNode, reasonable }],
   ),
-  then: actions([Requesting.respond, { request, suggestedSourceNode, suggestedTargetNode, reasonable, error }]),
+  then: actions([Requesting.respond, { request, suggestedSourceNode, suggestedTargetNode, reasonable }]),
+});
+
+export const SuggestEdgeErrorResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/suggestEdge" }, { request }],
+    [EnrichedDAG.suggestEdge, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
 });
 
 // --- Get Graph Nodes (Query) ---

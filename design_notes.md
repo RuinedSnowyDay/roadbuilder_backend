@@ -325,12 +325,35 @@ where: async (frames) => {
 3. `UserLoginResponse` matches both the request and session creation, then responds
 4. `UserLoginErrorResponse` handles login failures separately
 
+#### Challenge 5: Mutually Exclusive Action Outputs
+
+**Problem**: Actions that return either success or error (e.g., `UserAuthentication.register` returns either `{ user }` OR `{ error }`) cannot be matched in a single sync that expects both fields. The sync engine's `matchArguments` function fails when a key in the output pattern is missing from the actual output (returns `undefined`).
+
+**Discovery**: This issue was widespread across many syncs. Initially discovered in `UserRegistrationResponse`, but a comprehensive review found the same pattern in:
+
+- **UserAuthentication**: `UserRegistrationResponse` (fixed)
+- **ObjectManager**: `CreateAssignedObjectResponse`, `AccessObjectResponse`, `SuggestTitleResponse`
+- **ResourceList**: `CreateResourceListResponse`, `AccessResourceListResponse`, `AppendResourceResponse`, `AccessResourceResponse`
+- **EnrichedDAG**: `CreateEmptyGraphResponse`, `AccessGraphResponse`, `AddNodeResponse`, `AccessNodeResponse`, `AddEdgeResponse`, `AccessEdgeResponse`, `SuggestNodeTitleResponse`, `SuggestEdgeResponse`
+- **ObjectChecker**: `CreateCheckResponse`
+- **FileUploading**: `RequestUploadURLResponse`, `ConfirmUploadResponse`
+
+**Solution**: Split all affected response syncs into separate success and error handlers:
+
+- Success syncs match only the success output (e.g., `{ assignedObject }`, `{ newGraph }`, etc.)
+- Error syncs match only the error output (e.g., `{ error }`)
+
+This pattern matches the login flow (`UserLoginResponse` and `UserLoginErrorResponse`) and ensures that each sync only matches when its specific output is present. This is a critical pattern for any action that has mutually exclusive success/error outputs.
+
+**Impact**: Fixed 18 response syncs across 5 concept files, splitting each into success/error pairs. This increased the total sync count but ensures all syncs work correctly with the sync engine's matching logic.
+
 ### Implementation Statistics
 
 - **Total Sync Files**: 8
-- **Total Syncs**: ~80+ individual synchronizations
+- **Total Syncs**: ~100+ individual synchronizations (increased from ~80+ after fixing mutually exclusive output issues)
 - **Concepts Covered**: 7 (excluding Requesting which is the bootstrap concept)
 - **Authentication Required**: All syncs except registration and public queries
+- **Response Syncs Fixed**: 18 syncs split into success/error pairs to handle mutually exclusive outputs
 
 ### Testing Approach
 
@@ -356,13 +379,13 @@ The synchronizations follow the documented patterns from `implementing-synchroni
 
 ### Files Created
 
-- `src/syncs/auth.sync.ts` - 8 syncs
-- `src/syncs/objectManager.sync.ts` - 8 syncs
-- `src/syncs/resourceList.sync.ts` - 20 syncs
-- `src/syncs/enrichedDAG.sync.ts` - 20 syncs
-- `src/syncs/objectChecker.sync.ts` - 9 syncs
+- `src/syncs/auth.sync.ts` - 10 syncs (updated from 8 - registration response split into success/error)
+- `src/syncs/objectManager.sync.ts` - 11 syncs (updated from 8 - 3 response syncs split into success/error pairs)
+- `src/syncs/resourceList.sync.ts` - 24 syncs (updated from 20 - 4 response syncs split into success/error pairs)
+- `src/syncs/enrichedDAG.sync.ts` - 28 syncs (updated from 20 - 8 response syncs split into success/error pairs)
+- `src/syncs/objectChecker.sync.ts` - 10 syncs (updated from 9 - 1 response sync split into success/error pair)
 - `src/syncs/sharing.sync.ts` - 5 syncs
-- `src/syncs/fileUploading.sync.ts` - 9 syncs
+- `src/syncs/fileUploading.sync.ts` - 11 syncs (updated from 9 - 2 response syncs split into success/error pairs)
 
 All syncs are automatically discovered by the import generation system and registered with the sync engine.
 
