@@ -12,6 +12,9 @@
     *   `revokeAccess (file: File, user: User): ()`
         *   **requires**: `user` is in the `sharedWith` set for `file`.
         *   **effects**: removes the `user` from the `sharedWith` set for `file`.
+    *   `deleteFile (file: File): ()`
+        *   **requires**: the given `file` exists in the sharing state.
+        *   **effects**: removes the file document from the sharing state, cleaning up all sharing relationships for that file.
 *   **queries**:
     *   `_isSharedWith (file: File, user: User): (access: Boolean)` (Revised pure query)
         *   **requires**: `file` and `user` exist.

@@ -107,6 +107,37 @@
 
 ---
 
+### POST /api/Sharing/deleteFile
+
+**Description:** Removes all sharing relationships for a file by deleting the file document from the sharing state. This is typically called automatically when a file is deleted to clean up orphaned sharing records.
+
+**Requirements:**
+- The given `file` exists in the sharing state.
+
+**Effects:**
+- Removes the file document from the sharing state, cleaning up all sharing relationships for that file.
+
+**Request Body:**
+```json
+{
+  "file": "ID"
+}
+```
+
+**Success Response Body (Action):**
+```json
+{}
+```
+
+**Error Response Body:**
+```json
+{
+  "error": "string"
+}
+```
+
+---
+
 ### POST /api/Sharing/_getFilesSharedWithUser
 
 **Description:** Query that retrieves all files that have been shared with a specific user.

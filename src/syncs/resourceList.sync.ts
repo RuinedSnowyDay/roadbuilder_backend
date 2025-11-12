@@ -1,0 +1,301 @@
+import { actions, Frames, Sync } from "@engine";
+import { Requesting, ResourceList, Sessioning } from "@concepts";
+
+// --- Create Resource List ---
+
+export const CreateResourceListRequest: Sync = ({ request, session, listTitle, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/createResourceList", session, listTitle },
+    { request },
+  ]),
+  where: async (frames) => {
+    return await frames.query(Sessioning._getUser, { session }, { user });
+  },
+  then: actions([ResourceList.createResourceList, { owner: user, listTitle }]),
+});
+
+export const CreateResourceListResponse: Sync = ({ request, newResourceList, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/createResourceList" }, { request }],
+    [ResourceList.createResourceList, {}, { newResourceList, error }],
+  ),
+  then: actions([Requesting.respond, { request, newResourceList, error }]),
+});
+
+// --- Access Resource List ---
+
+export const AccessResourceListRequest: Sync = ({ request, session, listTitle, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/accessResourceList", session, listTitle },
+    { request },
+  ]),
+  where: async (frames) => {
+    return await frames.query(Sessioning._getUser, { session }, { user });
+  },
+  then: actions([ResourceList.accessResourceList, { owner: user, listTitle }]),
+});
+
+export const AccessResourceListResponse: Sync = ({ request, accessedResourceList, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/accessResourceList" }, { request }],
+    [ResourceList.accessResourceList, {}, { accessedResourceList, error }],
+  ),
+  then: actions([Requesting.respond, { request, accessedResourceList, error }]),
+});
+
+// --- Rename Resource List ---
+
+export const RenameResourceListRequest: Sync = ({ request, session, resourceList, newTitle, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/renameResourceList", session, resourceList, newTitle },
+    { request },
+  ]),
+  where: async (frames) => {
+    return await frames.query(Sessioning._getUser, { session }, { user });
+  },
+  then: actions([ResourceList.renameResourceList, { resourceList, newTitle }]),
+});
+
+export const RenameResourceListResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/renameResourceList" }, { request }],
+    [ResourceList.renameResourceList, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
+});
+
+// --- Append Resource ---
+
+export const AppendResourceRequest: Sync = ({ request, session, resourceList, resource, resourceTitle, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/appendResource", session, resourceList, resource, resourceTitle },
+    { request },
+  ]),
+  where: async (frames) => {
+    return await frames.query(Sessioning._getUser, { session }, { user });
+  },
+  then: actions([ResourceList.appendResource, { resourceList, resource, resourceTitle }]),
+});
+
+export const AppendResourceResponse: Sync = ({ request, newIndexedResource, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/appendResource" }, { request }],
+    [ResourceList.appendResource, {}, { newIndexedResource, error }],
+  ),
+  then: actions([Requesting.respond, { request, newIndexedResource, error }]),
+});
+
+// --- Access Resource ---
+
+export const AccessResourceRequest: Sync = ({ request, session, resourceList, index, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/accessResource", session, resourceList, index },
+    { request },
+  ]),
+  where: async (frames) => {
+    return await frames.query(Sessioning._getUser, { session }, { user });
+  },
+  then: actions([ResourceList.accessResource, { resourceList, index }]),
+});
+
+export const AccessResourceResponse: Sync = ({ request, accessedIndexedResource, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/accessResource" }, { request }],
+    [ResourceList.accessResource, {}, { accessedIndexedResource, error }],
+  ),
+  then: actions([Requesting.respond, { request, accessedIndexedResource, error }]),
+});
+
+// --- Delete Resource ---
+
+export const DeleteResourceRequest: Sync = ({ request, session, resourceList, index, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/deleteResource", session, resourceList, index },
+    { request },
+  ]),
+  where: async (frames) => {
+    return await frames.query(Sessioning._getUser, { session }, { user });
+  },
+  then: actions([ResourceList.deleteResource, { resourceList, index }]),
+});
+
+export const DeleteResourceResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/deleteResource" }, { request }],
+    [ResourceList.deleteResource, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
+});
+
+// --- Swap Resources ---
+
+export const SwapResourcesRequest: Sync = ({ request, session, resourceList, index1, index2, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/swapResources", session, resourceList, index1, index2 },
+    { request },
+  ]),
+  where: async (frames) => {
+    return await frames.query(Sessioning._getUser, { session }, { user });
+  },
+  then: actions([ResourceList.swapResources, { resourceList, index1, index2 }]),
+});
+
+export const SwapResourcesResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/swapResources" }, { request }],
+    [ResourceList.swapResources, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
+});
+
+// --- Move Resource ---
+
+export const MoveResourceRequest: Sync = ({ request, session, resourceList, oldIndex, newIndex, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/moveResource", session, resourceList, oldIndex, newIndex },
+    { request },
+  ]),
+  where: async (frames) => {
+    return await frames.query(Sessioning._getUser, { session }, { user });
+  },
+  then: actions([ResourceList.moveResource, { resourceList, oldIndex, newIndex }]),
+});
+
+export const MoveResourceResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/moveResource" }, { request }],
+    [ResourceList.moveResource, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
+});
+
+// --- Delete Resource List ---
+
+export const DeleteResourceListRequest: Sync = ({ request, session, resourceList, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/deleteResourceList", session, resourceList },
+    { request },
+  ]),
+  where: async (frames) => {
+    return await frames.query(Sessioning._getUser, { session }, { user });
+  },
+  then: actions([ResourceList.deleteResourceList, { resourceList }]),
+});
+
+export const DeleteResourceListResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/deleteResourceList" }, { request }],
+    [ResourceList.deleteResourceList, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
+});
+
+// --- Rename Indexed Resource ---
+
+export const RenameIndexedResourceRequest: Sync = ({ request, session, indexedResource, newTitle, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/renameIndexedResource", session, indexedResource, newTitle },
+    { request },
+  ]),
+  where: async (frames) => {
+    return await frames.query(Sessioning._getUser, { session }, { user });
+  },
+  then: actions([ResourceList.renameIndexedResource, { indexedResource, newTitle }]),
+});
+
+export const RenameIndexedResourceResponse: Sync = ({ request, error }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/renameIndexedResource" }, { request }],
+    [ResourceList.renameIndexedResource, {}, { error }],
+  ),
+  then: actions([Requesting.respond, { request, error }]),
+});
+
+// --- Get List Resources (Query) ---
+
+export const GetListResourcesRequest: Sync = ({ request, session, resourceList, doc, results, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/_getListResources", session, resourceList },
+    { request },
+  ]),
+  where: async (frames) => {
+    const userFrames = await frames.query(Sessioning._getUser, { session }, { user });
+    if (userFrames.length === 0) {
+      const originalFrame = frames[0];
+      return new Frames({ ...originalFrame, [results]: { error: "Invalid or expired session." } });
+    }
+
+    const resourceFrames = await userFrames.query(ResourceList._getListResources, { resourceList }, { doc });
+    if (resourceFrames.length === 0) {
+      const emptyResultFrame = { ...userFrames[0], [results]: [] };
+      return new Frames(emptyResultFrame);
+    }
+
+    return resourceFrames.collectAs([doc], results);
+  },
+  then: actions([Requesting.respond, { request, results }]),
+});
+
+// --- Get Resource List (Query) ---
+
+export const GetResourceListRequest: Sync = ({ request, session, listTitle, doc, results, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/_getResourceList", session, listTitle },
+    { request },
+  ]),
+  where: async (frames) => {
+    const userFrames = await frames.query(Sessioning._getUser, { session }, { user });
+    if (userFrames.length === 0) {
+      const originalFrame = frames[0];
+      return new Frames({ ...originalFrame, [results]: { error: "Invalid or expired session." } });
+    }
+
+    const listFrames = await userFrames.query(ResourceList._getResourceList, { owner: user, listTitle }, { doc });
+    if (listFrames.length === 0) {
+      const emptyResultFrame = { ...userFrames[0], [results]: null };
+      return new Frames(emptyResultFrame);
+    }
+
+    return listFrames.collectAs([doc], results);
+  },
+  then: actions([Requesting.respond, { request, results }]),
+});
+
+// --- Get User Resource Lists (Query) ---
+
+export const GetUserResourceListsRequest: Sync = ({ request, session, user, doc, results }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ResourceList/_getUserResourceLists", session },
+    { request },
+  ]),
+  where: async (frames) => {
+    const userFrames = await frames.query(Sessioning._getUser, { session }, { user });
+    if (userFrames.length === 0) {
+      const originalFrame = frames[0];
+      return new Frames({ ...originalFrame, [results]: { error: "Invalid or expired session." } });
+    }
+
+    const listFrames = await userFrames.query(ResourceList._getUserResourceLists, { owner: user }, { doc });
+    if (listFrames.length === 0) {
+      const emptyResultFrame = { ...userFrames[0], [results]: [] };
+      return new Frames(emptyResultFrame);
+    }
+
+    return listFrames.collectAs([doc], results);
+  },
+  then: actions([Requesting.respond, { request, results }]),
+});
+

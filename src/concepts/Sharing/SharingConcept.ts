@@ -102,13 +102,34 @@ export default class SharingConcept {
   }
 
   /**
+   * deleteFile (file: File): ()
+   *
+   * **requires**: the given `file` exists in the sharing state.
+   *
+   * **effects**: removes the file document from the sharing state, cleaning up all sharing relationships for that file.
+   */
+  async deleteFile(
+    { file }: { file: File },
+  ): Promise<Empty | { error: string }> {
+    const result = await this.files.deleteOne({ _id: file });
+
+    if (result.deletedCount === 0) {
+      return { error: `File ${file} not found in sharing state.` };
+    }
+
+    return {};
+  }
+
+  /**
    * _getFilesSharedWithUser (user: User): (file: File)
    *
    * **requires**: user exists.
    *
    * **effects**: returns the set of all `file`s that have `user` in their `sharedWith` set.
    */
-  async _getFilesSharedWithUser({ user }: { user: User }): Promise<{ file: File }[]> {
+  async _getFilesSharedWithUser(
+    { user }: { user: User },
+  ): Promise<{ file: File }[]> {
     const docs = await this.files.find({ sharedWith: user }).toArray();
     return docs.map((doc) => ({ file: doc._id }));
   }
