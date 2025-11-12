@@ -54,8 +54,10 @@ export const exclusions: Array<string> = [
   "/api/UserAuthentication/register",
   "/api/UserAuthentication/login",
 
-  // Sessioning: Logout handled via syncs
+  // Sessioning: All actions and queries handled via syncs (not public)
+  "/api/Sessioning/create",
   "/api/Sessioning/delete",
+  "/api/Sessioning/_getUser",
 
   // ObjectManager: All actions and queries require authentication via syncs
   "/api/ObjectManager/createAssignedObject",
@@ -96,6 +98,7 @@ export const exclusions: Array<string> = [
   "/api/EnrichedDAG/deleteGraph",
   "/api/EnrichedDAG/suggestNodeTitle",
   "/api/EnrichedDAG/suggestEdge",
+  "/api/EnrichedDAG/wouldCreateCycle", // Private helper method, not a public API
   "/api/EnrichedDAG/_getGraphNodes",
   "/api/EnrichedDAG/_getGraphEdges",
   "/api/EnrichedDAG/_getNodeOutgoingEdges",
