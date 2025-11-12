@@ -75,7 +75,15 @@ export const RenameResourceListRequest: Sync = ({ request, session, resourceList
   then: actions([ResourceList.renameResourceList, { resourceList, newTitle }]),
 });
 
-export const RenameResourceListResponse: Sync = ({ request, error }) => ({
+export const RenameResourceListSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/renameResourceList" }, { request }],
+    [ResourceList.renameResourceList, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const RenameResourceListErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/ResourceList/renameResourceList" }, { request }],
     [ResourceList.renameResourceList, {}, { error }],
@@ -157,7 +165,15 @@ export const DeleteResourceRequest: Sync = ({ request, session, resourceList, in
   then: actions([ResourceList.deleteResource, { resourceList, index }]),
 });
 
-export const DeleteResourceResponse: Sync = ({ request, error }) => ({
+export const DeleteResourceSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/deleteResource" }, { request }],
+    [ResourceList.deleteResource, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const DeleteResourceErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/ResourceList/deleteResource" }, { request }],
     [ResourceList.deleteResource, {}, { error }],
@@ -179,7 +195,15 @@ export const SwapResourcesRequest: Sync = ({ request, session, resourceList, ind
   then: actions([ResourceList.swapResources, { resourceList, index1, index2 }]),
 });
 
-export const SwapResourcesResponse: Sync = ({ request, error }) => ({
+export const SwapResourcesSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/swapResources" }, { request }],
+    [ResourceList.swapResources, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const SwapResourcesErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/ResourceList/swapResources" }, { request }],
     [ResourceList.swapResources, {}, { error }],
@@ -201,7 +225,15 @@ export const MoveResourceRequest: Sync = ({ request, session, resourceList, oldI
   then: actions([ResourceList.moveResource, { resourceList, oldIndex, newIndex }]),
 });
 
-export const MoveResourceResponse: Sync = ({ request, error }) => ({
+export const MoveResourceSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/moveResource" }, { request }],
+    [ResourceList.moveResource, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const MoveResourceErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/ResourceList/moveResource" }, { request }],
     [ResourceList.moveResource, {}, { error }],
@@ -223,7 +255,15 @@ export const DeleteResourceListRequest: Sync = ({ request, session, resourceList
   then: actions([ResourceList.deleteResourceList, { resourceList }]),
 });
 
-export const DeleteResourceListResponse: Sync = ({ request, error }) => ({
+export const DeleteResourceListSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/deleteResourceList" }, { request }],
+    [ResourceList.deleteResourceList, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const DeleteResourceListErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/ResourceList/deleteResourceList" }, { request }],
     [ResourceList.deleteResourceList, {}, { error }],
@@ -245,7 +285,15 @@ export const RenameIndexedResourceRequest: Sync = ({ request, session, indexedRe
   then: actions([ResourceList.renameIndexedResource, { indexedResource, newTitle }]),
 });
 
-export const RenameIndexedResourceResponse: Sync = ({ request, error }) => ({
+export const RenameIndexedResourceSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ResourceList/renameIndexedResource" }, { request }],
+    [ResourceList.renameIndexedResource, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const RenameIndexedResourceErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/ResourceList/renameIndexedResource" }, { request }],
     [ResourceList.renameIndexedResource, {}, { error }],

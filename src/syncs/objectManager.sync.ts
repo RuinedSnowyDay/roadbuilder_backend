@@ -80,7 +80,15 @@ export const DeleteAssignedObjectRequest: Sync = ({ request, session, title, use
   then: actions([ObjectManager.deleteAssignedObject, { owner: user, title }]),
 });
 
-export const DeleteAssignedObjectResponse: Sync = ({ request, error }) => ({
+export const DeleteAssignedObjectSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ObjectManager/deleteAssignedObject" }, { request }],
+    [ObjectManager.deleteAssignedObject, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const DeleteAssignedObjectErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/ObjectManager/deleteAssignedObject" }, { request }],
     [ObjectManager.deleteAssignedObject, {}, { error }],
@@ -107,7 +115,19 @@ export const ChangeTitleRequest: Sync = (
   ]),
 });
 
-export const ChangeTitleResponse: Sync = ({ request, error }) => ({
+export const ChangeTitleSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [
+      Requesting.request,
+      { path: "/ObjectManager/changeAssignedObjectTitle" },
+      { request },
+    ],
+    [ObjectManager.changeAssignedObjectTitle, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const ChangeTitleErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [
       Requesting.request,
@@ -138,7 +158,19 @@ export const ChangeDescriptionRequest: Sync = (
   ]),
 });
 
-export const ChangeDescriptionResponse: Sync = ({ request, error }) => ({
+export const ChangeDescriptionSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [
+      Requesting.request,
+      { path: "/ObjectManager/changeAssignedObjectDescription" },
+      { request },
+    ],
+    [ObjectManager.changeAssignedObjectDescription, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const ChangeDescriptionErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [
       Requesting.request,

@@ -347,6 +347,16 @@ This pattern matches the login flow (`UserLoginResponse` and `UserLoginErrorResp
 
 **Impact**: Fixed 18 response syncs across 5 concept files, splitting each into success/error pairs. This increased the total sync count but ensures all syncs work correctly with the sync engine's matching logic.
 
+**Additional Discovery**: After fixing the initial issue, we discovered that actions returning `Empty | { error }` (where `Empty` is `{}`) also had the same problem. Response syncs that only matched `{ error }` would never fire for successful operations that return `{}`. Fixed an additional 15 response syncs:
+
+- **EnrichedDAG**: `ChangeNodeTitleResponse`, `RemoveNodeResponse`, `RemoveEdgeResponse`, `DeleteGraphResponse`
+- **ResourceList**: `RenameResourceListResponse`, `DeleteResourceResponse`, `SwapResourcesResponse`, `MoveResourceResponse`, `DeleteResourceListResponse`, `RenameIndexedResourceResponse`
+- **ObjectManager**: `DeleteAssignedObjectResponse`, `ChangeTitleResponse`, `ChangeDescriptionResponse`
+- **ObjectChecker**: `DeleteCheckResponse`
+- **Auth**: `UserLogoutResponse` (already fixed by user)
+
+**Total Impact**: 33 response syncs split into success/error pairs across all concept files.
+
 #### Challenge 6: Query Output Pattern Matching and Response Format Consistency
 
 **Problem**: Two related issues were discovered with the `GetUserSuccessRequest` and `GetUserErrorRequest` syncs:
@@ -379,10 +389,12 @@ This ensures that:
 ### Implementation Statistics
 
 - **Total Sync Files**: 8
-- **Total Syncs**: ~100+ individual synchronizations (increased from ~80+ after fixing mutually exclusive output issues)
+- **Total Syncs**: ~115+ individual synchronizations (increased from ~80+ after fixing mutually exclusive output issues)
 - **Concepts Covered**: 7 (excluding Requesting which is the bootstrap concept)
 - **Authentication Required**: All syncs except registration and public queries
-- **Response Syncs Fixed**: 18 syncs split into success/error pairs to handle mutually exclusive outputs
+- **Response Syncs Fixed**: 33 syncs split into success/error pairs to handle mutually exclusive outputs
+  - 18 syncs for actions returning `{ successField } | { error }`
+  - 15 syncs for actions returning `Empty | { error }` (where `Empty` is `{}`)
 
 ### Testing Approach
 
@@ -408,13 +420,13 @@ The synchronizations follow the documented patterns from `implementing-synchroni
 
 ### Files Created
 
-- `src/syncs/auth.sync.ts` - 10 syncs (updated from 8 - registration response split into success/error; GetUserSuccessRequest and GetUserErrorRequest fixed to use results format and handle query pattern matching correctly)
-- `src/syncs/objectManager.sync.ts` - 11 syncs (updated from 8 - 3 response syncs split into success/error pairs)
-- `src/syncs/resourceList.sync.ts` - 24 syncs (updated from 20 - 4 response syncs split into success/error pairs)
-- `src/syncs/enrichedDAG.sync.ts` - 28 syncs (updated from 20 - 8 response syncs split into success/error pairs)
-- `src/syncs/objectChecker.sync.ts` - 10 syncs (updated from 9 - 1 response sync split into success/error pair)
-- `src/syncs/sharing.sync.ts` - 5 syncs
-- `src/syncs/fileUploading.sync.ts` - 11 syncs (updated from 9 - 2 response syncs split into success/error pairs)
+- `src/syncs/auth.sync.ts` - 13 syncs (updated from 8 - registration response split, logout response split, _getUser query added with success/error split)
+- `src/syncs/objectManager.sync.ts` - 14 syncs (updated from 8 - 3 response syncs with success fields split, 3 response syncs with Empty split)
+- `src/syncs/resourceList.sync.ts` - 30 syncs (updated from 20 - 4 response syncs with success fields split, 6 response syncs with Empty split)
+- `src/syncs/enrichedDAG.sync.ts` - 32 syncs (updated from 20 - 8 response syncs with success fields split, 4 response syncs with Empty split)
+- `src/syncs/objectChecker.sync.ts` - 12 syncs (updated from 9 - 1 response sync with success field split, 2 response syncs with Empty split, 1 already had success/error split)
+- `src/syncs/sharing.sync.ts` - 5 syncs (already had success/error split)
+- `src/syncs/fileUploading.sync.ts` - 11 syncs (updated from 9 - 2 response syncs with success fields split, delete already had success/error split)
 
 All syncs are automatically discovered by the import generation system and registered with the sync engine.
 

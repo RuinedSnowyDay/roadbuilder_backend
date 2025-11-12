@@ -135,7 +135,15 @@ export const ChangeNodeTitleRequest: Sync = ({ request, session, graph, node, ne
   then: actions([EnrichedDAG.changeNodeTitle, { graph, node, newNodeTitle }]),
 });
 
-export const ChangeNodeTitleResponse: Sync = ({ request, error }) => ({
+export const ChangeNodeTitleSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/changeNodeTitle" }, { request }],
+    [EnrichedDAG.changeNodeTitle, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const ChangeNodeTitleErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/changeNodeTitle" }, { request }],
     [EnrichedDAG.changeNodeTitle, {}, { error }],
@@ -217,7 +225,15 @@ export const RemoveNodeRequest: Sync = ({ request, session, node, user }) => ({
   then: actions([EnrichedDAG.removeNode, { node }]),
 });
 
-export const RemoveNodeResponse: Sync = ({ request, error }) => ({
+export const RemoveNodeSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/removeNode" }, { request }],
+    [EnrichedDAG.removeNode, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const RemoveNodeErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/removeNode" }, { request }],
     [EnrichedDAG.removeNode, {}, { error }],
@@ -239,7 +255,15 @@ export const RemoveEdgeRequest: Sync = ({ request, session, edge, user }) => ({
   then: actions([EnrichedDAG.removeEdge, { edge }]),
 });
 
-export const RemoveEdgeResponse: Sync = ({ request, error }) => ({
+export const RemoveEdgeSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/removeEdge" }, { request }],
+    [EnrichedDAG.removeEdge, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const RemoveEdgeErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/removeEdge" }, { request }],
     [EnrichedDAG.removeEdge, {}, { error }],
@@ -261,7 +285,15 @@ export const DeleteGraphRequest: Sync = ({ request, session, graph, user }) => (
   then: actions([EnrichedDAG.deleteGraph, { graph }]),
 });
 
-export const DeleteGraphResponse: Sync = ({ request, error }) => ({
+export const DeleteGraphSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/EnrichedDAG/deleteGraph" }, { request }],
+    [EnrichedDAG.deleteGraph, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const DeleteGraphErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/EnrichedDAG/deleteGraph" }, { request }],
     [EnrichedDAG.deleteGraph, {}, { error }],

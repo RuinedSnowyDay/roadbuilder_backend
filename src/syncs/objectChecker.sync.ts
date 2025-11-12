@@ -105,7 +105,15 @@ export const DeleteCheckRequest: Sync = ({ request, session, check, user }) => (
   then: actions([ObjectChecker.deleteCheck, { check }]),
 });
 
-export const DeleteCheckResponse: Sync = ({ request, error }) => ({
+export const DeleteCheckSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ObjectChecker/deleteCheck" }, { request }],
+    [ObjectChecker.deleteCheck, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const DeleteCheckErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/ObjectChecker/deleteCheck" }, { request }],
     [ObjectChecker.deleteCheck, {}, { error }],
