@@ -246,8 +246,9 @@ Respond with ONLY the suggested title text, nothing else. Do not include quotati
    */
   async _getUserAssignedObjects(
     { owner }: { owner: User },
-  ): Promise<AssignedObjectDoc[]> {
-    return await this.assignedObjects.find({ owner }).toArray();
+  ): Promise<{ doc: AssignedObjectDoc }[]> {
+    const docs = await this.assignedObjects.find({ owner }).toArray();
+    return docs.map((doc) => ({ doc }));
   }
 
   /**

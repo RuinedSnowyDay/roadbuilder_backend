@@ -1,4 +1,4 @@
-import { actions, Sync } from "@engine";
+import { actions, Frames, Sync } from "@engine";
 import { Requesting, Sessioning, UserAuthentication } from "@concepts";
 
 /**
@@ -108,13 +108,101 @@ export const UserLogoutRequest: Sync = ({ request, session }) => ({
 });
 
 /**
- * @sync UserLogoutResponse
- * @description Responds to the logout request after session deletion.
+ * @sync UserLogoutSuccessResponse
+ * @description Responds to the logout request after successful session deletion.
  */
-export const UserLogoutResponse: Sync = ({ request, error }) => ({
+export const UserLogoutSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/Sessioning/delete" }, { request }],
+    [Sessioning.delete, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+/**
+ * @sync UserLogoutErrorResponse
+ * @description Responds to the logout request with an error if session deletion fails.
+ */
+export const UserLogoutErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/Sessioning/delete" }, { request }],
     [Sessioning.delete, {}, { error }],
   ),
   then: actions([Requesting.respond, { request, error }]),
+});
+
+// --- Get User (Query) ---
+
+/**
+ * @sync GetUserSuccessRequest
+ * @description Handles HTTP requests to get the user associated with a session (success case).
+ * This query is used internally by other syncs for authentication, but can also
+ * be called directly via HTTP to verify a session is valid.
+ */
+export const GetUserSuccessRequest: Sync = ({ request, session, user, results }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/Sessioning/_getUser", session },
+    { request },
+  ]),
+  where: async (frames) => {
+    // Query the Sessioning concept to get the user for this session
+    const userFrames = await frames.query(Sessioning._getUser, { session }, {
+      user,
+    });
+
+    // If we got frames with user, wrap in results array
+    if (userFrames.length > 0) {
+      return userFrames.collectAs([user], results);
+    }
+
+    // Otherwise, return empty frames (this sync won't fire)
+    return new Frames();
+  },
+  then: actions([
+    Requesting.respond,
+    { request, results },
+  ]),
+});
+
+/**
+ * @sync GetUserErrorRequest
+ * @description Handles HTTP requests to get the user associated with a session (error case).
+ * This fires when the session doesn't exist.
+ */
+export const GetUserErrorRequest: Sync = ({ request, session, error, results }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/Sessioning/_getUser", session },
+    { request },
+  ]),
+  where: async (frames) => {
+    // First check if we can get a user (success case)
+    const tempUser = Symbol("temp_user");
+    const userFrames = await frames.query(Sessioning._getUser, { session }, {
+      user: tempUser,
+    });
+
+    // If we found a user, this is not an error case - return empty frames
+    if (userFrames.length > 0) {
+      return new Frames();
+    }
+
+    // No user found, so try to get the error
+    const errorFrames = await frames.query(Sessioning._getUser, { session }, {
+      error,
+    });
+
+    // If we got frames with error, wrap in results array
+    if (errorFrames.length > 0) {
+      return errorFrames.collectAs([error], results);
+    }
+
+    // Otherwise, return empty frames (this sync won't fire)
+    return new Frames();
+  },
+  then: actions([
+    Requesting.respond,
+    { request, results },
+  ]),
 });

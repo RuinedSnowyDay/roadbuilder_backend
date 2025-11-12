@@ -347,6 +347,35 @@ This pattern matches the login flow (`UserLoginResponse` and `UserLoginErrorResp
 
 **Impact**: Fixed 18 response syncs across 5 concept files, splitting each into success/error pairs. This increased the total sync count but ensures all syncs work correctly with the sync engine's matching logic.
 
+#### Challenge 6: Query Output Pattern Matching and Response Format Consistency
+
+**Problem**: Two related issues were discovered with the `GetUserSuccessRequest` and `GetUserErrorRequest` syncs:
+
+1. **Query Pattern Matching**: The `GetUserErrorRequest` sync was trying to query `Sessioning._getUser` with an output pattern `{ error }` even when the session was valid. When a valid session exists, the query returns `[{ user: ... }]` (not `{ error }`), causing the query pattern matching to fail. This resulted in a "Missing binding: Symbol(error) in frame" error when trying to respond to the request.
+
+2. **Response Format Inconsistency**: Both syncs were responding with `{ request, user }` or `{ request, error }` directly, but the frontend's `callConceptQuery` helper expects all query responses to be wrapped in a `results` array format: `{ results: [...] }`. This caused the frontend to fail when trying to parse the response, showing "Failed to get user from session" even though the backend was returning the correct data.
+
+**Root Causes**: 
+- The sync engine's query matching requires all keys in the output pattern to be present in the query result. When `GetUserErrorRequest` queried for `error` on a valid session, the query returned `{ user }` instead, causing the pattern match to fail.
+- The syncs were not following the same response format pattern as other query syncs, which use `collectAs` to wrap results in a `results` field.
+
+**Solution**: Fixed both syncs to:
+1. **Handle query pattern matching correctly**: Modified `GetUserErrorRequest` to check for the success case first before querying for error:
+   - First query for `user` (using a temporary symbol) to check if the session is valid
+   - If a user is found, return empty frames so this sync doesn't fire (the success sync will handle it)
+   - Only if no user is found, then query for `error`
+   - If error is found, wrap it in results using `collectAs`
+
+2. **Use consistent response format**: Updated both syncs to wrap responses in `results` arrays:
+   - `GetUserSuccessRequest`: Uses `collectAs([user], results)` to wrap the user in a results array, responds with `{ request, results }`
+   - `GetUserErrorRequest`: Uses `collectAs([error], results)` to wrap the error in a results array, responds with `{ request, results }`
+
+This ensures that:
+- Valid sessions: `GetUserSuccessRequest` fires and responds with `{ results: [{ user: '...' }] }`
+- Invalid sessions: `GetUserErrorRequest` fires and responds with `{ results: [{ error: '...' }] }`
+
+**Impact**: Fixed both the "Missing binding: Symbol(error) in frame" error and the "Failed to get user from session" frontend error. This pattern should be applied to any query syncs that need to handle both success and error cases, and all query syncs should use `collectAs` to wrap results for consistency with the frontend's expectations.
+
 ### Implementation Statistics
 
 - **Total Sync Files**: 8
@@ -379,7 +408,7 @@ The synchronizations follow the documented patterns from `implementing-synchroni
 
 ### Files Created
 
-- `src/syncs/auth.sync.ts` - 10 syncs (updated from 8 - registration response split into success/error)
+- `src/syncs/auth.sync.ts` - 10 syncs (updated from 8 - registration response split into success/error; GetUserSuccessRequest and GetUserErrorRequest fixed to use results format and handle query pattern matching correctly)
 - `src/syncs/objectManager.sync.ts` - 11 syncs (updated from 8 - 3 response syncs split into success/error pairs)
 - `src/syncs/resourceList.sync.ts` - 24 syncs (updated from 20 - 4 response syncs split into success/error pairs)
 - `src/syncs/enrichedDAG.sync.ts` - 28 syncs (updated from 20 - 8 response syncs split into success/error pairs)
@@ -501,6 +530,64 @@ While the current synchronizations handle request/response cycles and authentica
 - They maintain referential integrity across concepts without violating concept independence
 - Cascade deletions are implemented in `cascadeDeletions.sync.ts` to keep them organized
 - Unlike request/response syncs, cascade deletions don't require authentication in the `where` clause since they're triggered by concept actions, not HTTP requests
+
+## Recent Fixes: Resource Content and Checkmark Functionality
+
+### Issue 1: Resource Completion Toggle Timeouts
+
+**Problem**: When toggling resource completion (checkmarks), requests would timeout after 10 seconds. Backend trace showed `ObjectChecker.markObject` and `ObjectChecker.unmarkObject` actions succeeding but no response being sent.
+
+**Root Cause**: The `MarkObjectResponse` and `UnmarkObjectResponse` syncs only handled error cases. Both `markObject` and `unmarkObject` return `{}` on success or `{ error }` on error (mutually exclusive outputs), requiring separate success and error response syncs.
+
+**Solution**: Split both syncs into success/error pairs:
+- `MarkObjectSuccessResponse` - handles `{}` success return
+- `MarkObjectErrorResponse` - handles `{ error }` error return
+- `UnmarkObjectSuccessResponse` - handles `{}` success return
+- `UnmarkObjectErrorResponse` - handles `{ error }` error return
+
+**Files Modified**: `src/syncs/objectChecker.sync.ts`
+
+### Issue 2: Checkmark Query "functionOutputArray is not iterable" Error
+
+**Problem**: When appending resources to nodes, backend errors showed "functionOutputArray is not iterable" during `ObjectChecker._getCheck` calls.
+
+**Root Cause**: The `_getCheck` query returned `CheckDoc | null`, but the sync engine's query processing expects arrays. The query needed to return `{ doc: CheckDoc }[]` (array with one item or empty).
+
+**Solution**:
+1. Updated `ObjectChecker._getCheck` query to return `{ doc: CheckDoc }[]` instead of `CheckDoc | null`
+2. Updated `GetCheckRequest` sync to manually extract the `CheckDoc` from the first frame and wrap it in a `results` array: `[{ doc: CheckDoc }]` or `[]` if no check exists
+3. Updated `ObjectCheckerConcept.test.ts` to unwrap the `doc` field from the returned array
+
+**Files Modified**:
+- `src/concepts/ObjectChecker/ObjectCheckerConcept.ts`
+- `src/syncs/objectChecker.sync.ts`
+- `src/concepts/ObjectChecker/ObjectCheckerConcept.test.ts`
+
+### Issue 3: Resource Content Disappearing on Reload
+
+**Problem**: Markdown content added to resources would disappear after page reload or login/logout.
+
+**Root Causes**: Two separate issues:
+1. **File Deletion Timeout**: `DeleteFileResponse` sync only handled error cases, but `FileUploading.delete` returns `{}` on success, causing timeouts when deleting old files before creating new ones
+2. **Download URL Response Format**: `GetDownloadURLRequest` sync responded with `{ request, downloadURL }` directly, but the frontend's `callConceptQuery` expects responses wrapped in a `results` array
+
+**Solutions**:
+1. Split `DeleteFileResponse` into `DeleteFileSuccessResponse` (handles `{}`) and `DeleteFileErrorResponse` (handles `{ error }`)
+2. Updated `GetDownloadURLRequest` to:
+   - Extract the `downloadURL` value from the query result
+   - Wrap it in an array: `[{ downloadURL: urlValue }]`
+   - Store in `results` and respond with `{ request, results }`
+
+**Files Modified**: `src/syncs/fileUploading.sync.ts`
+
+### Pattern Consistency
+
+All fixes follow the established patterns:
+- **Mutually Exclusive Outputs**: Actions returning either success (`{}` or `{ data }`) or error (`{ error }`) require separate success/error response syncs
+- **Query Response Format**: All query syncs must wrap results in a `results` array to match frontend expectations: `{ results: [...] }`
+- **Array Return Types**: Queries must return arrays (even if single-item or empty) to work with the sync engine's query processing
+
+**Impact**: Fixed resource completion toggling, checkmark loading, and resource content persistence. All three issues were related to the same underlying pattern: syncs not properly handling mutually exclusive action outputs or query response formats.
 
 ## Next Steps / Future Considerations
 

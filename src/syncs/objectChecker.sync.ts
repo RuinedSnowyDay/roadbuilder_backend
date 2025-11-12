@@ -45,7 +45,15 @@ export const MarkObjectRequest: Sync = ({ request, session, check, user }) => ({
   then: actions([ObjectChecker.markObject, { check }]),
 });
 
-export const MarkObjectResponse: Sync = ({ request, error }) => ({
+export const MarkObjectSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ObjectChecker/markObject" }, { request }],
+    [ObjectChecker.markObject, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const MarkObjectErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/ObjectChecker/markObject" }, { request }],
     [ObjectChecker.markObject, {}, { error }],
@@ -67,7 +75,15 @@ export const UnmarkObjectRequest: Sync = ({ request, session, check, user }) => 
   then: actions([ObjectChecker.unmarkObject, { check }]),
 });
 
-export const UnmarkObjectResponse: Sync = ({ request, error }) => ({
+export const UnmarkObjectSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/ObjectChecker/unmarkObject" }, { request }],
+    [ObjectChecker.unmarkObject, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const UnmarkObjectErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/ObjectChecker/unmarkObject" }, { request }],
     [ObjectChecker.unmarkObject, {}, { error }],
@@ -166,12 +182,22 @@ export const GetCheckRequest: Sync = ({ request, session, object, doc, results, 
 
     const checkFrames = await userFrames.query(ObjectChecker._getCheck, { user, object }, { doc });
     if (checkFrames.length === 0) {
-      const emptyResultFrame = { ...userFrames[0], [results]: null };
+      // No check exists, return empty array
+      const emptyResultFrame = { ...userFrames[0], [results]: [] };
       return new Frames(emptyResultFrame);
     }
 
-    // _getCheck returns a single document or null, so we handle it differently
-    return checkFrames.collectAs([doc], results);
+    // The query returns { doc: CheckDoc }[], and query processing extracts doc
+    // So doc is bound to CheckDoc directly. Extract document and wrap in array
+    // since callConceptQuery expects results to be an array.
+    const docValue = checkFrames[0][doc];
+    if (docValue && typeof docValue === "object") {
+      const resultFrame = { ...userFrames[0], [results]: [docValue] };
+      return new Frames(resultFrame);
+    }
+    // No valid document, return empty array
+    const emptyResultFrame = { ...userFrames[0], [results]: [] };
+    return new Frames(emptyResultFrame);
   },
   then: actions([Requesting.respond, { request, results }]),
 });

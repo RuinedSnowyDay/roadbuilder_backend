@@ -53,10 +53,11 @@ Deno.test(
       console.log(`  Result: Object marked successfully`);
 
       // Verify the check is marked
-      const checkAfterMark = await objectChecker._getCheck({
+      const checkAfterMarkResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
+      const checkAfterMark = checkAfterMarkResult.length > 0 ? checkAfterMarkResult[0].doc : null;
       assertExists(checkAfterMark, "Check should exist");
       assertEquals(
         checkAfterMark.checked,
@@ -76,10 +77,11 @@ Deno.test(
       console.log(`  Result: Object unmarked successfully`);
 
       // Verify the check is unmarked
-      const checkAfterUnmark = await objectChecker._getCheck({
+      const checkAfterUnmarkResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
+      const checkAfterUnmark = checkAfterUnmarkResult.length > 0 ? checkAfterUnmarkResult[0].doc : null;
       assertExists(checkAfterUnmark, "Check should still exist");
       assertEquals(
         checkAfterUnmark.checked,
@@ -107,10 +109,11 @@ Deno.test(
       console.log(`  Result: Check created with ID: \`${check2}\``);
 
       // Verify independence - User A's check is still unmarked
-      const checkA = await objectChecker._getCheck({
+      const checkAResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
+      const checkA = checkAResult.length > 0 ? checkAResult[0].doc : null;
       assertEquals(
         checkA?.checked,
         false,
@@ -119,10 +122,11 @@ Deno.test(
 
       // User B marks their check
       await objectChecker.markObject({ check: check2 });
-      const checkB = await objectChecker._getCheck({
+      const checkBResult = await objectChecker._getCheck({
         user: userB,
         object: object1,
       });
+      const checkB = checkBResult.length > 0 ? checkBResult[0].doc : null;
       assertEquals(
         checkB?.checked,
         true,
@@ -233,10 +237,11 @@ Deno.test(
         object: object1,
       });
       const { newCheck: check1 } = createResult as { newCheck: ID };
-      let check = await objectChecker._getCheck({
+      let checkResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
+      let check = checkResult.length > 0 ? checkResult[0].doc : null;
       assertEquals(
         check?.checked,
         false,
@@ -254,10 +259,11 @@ Deno.test(
         false,
         "Marking should succeed",
       );
-      check = await objectChecker._getCheck({
+      checkResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
+      check = checkResult.length > 0 ? checkResult[0].doc : null;
       assertEquals(
         check?.checked,
         true,
@@ -275,10 +281,11 @@ Deno.test(
         false,
         "Marking again should not error",
       );
-      check = await objectChecker._getCheck({
+      checkResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
+      check = checkResult.length > 0 ? checkResult[0].doc : null;
       assertEquals(
         check?.checked,
         true,
@@ -296,10 +303,11 @@ Deno.test(
         false,
         "Unmarking should succeed",
       );
-      check = await objectChecker._getCheck({
+      checkResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
+      check = checkResult.length > 0 ? checkResult[0].doc : null;
       assertEquals(
         check?.checked,
         false,
@@ -317,10 +325,11 @@ Deno.test(
         false,
         "Unmarking again should not error",
       );
-      check = await objectChecker._getCheck({
+      checkResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
+      check = checkResult.length > 0 ? checkResult[0].doc : null;
       assertEquals(
         check?.checked,
         false,
@@ -526,10 +535,11 @@ Deno.test(
       );
 
       // Verify new check starts as unchecked
-      const newCheck = await objectChecker._getCheck({
+      const newCheckResult = await objectChecker._getCheck({
         user: userA,
         object: object2,
       });
+      const newCheck = newCheckResult.length > 0 ? newCheckResult[0].doc : null;
       assertEquals(
         newCheck?.checked,
         false,
@@ -620,21 +630,24 @@ Deno.test(
       // 3. User A marks their check for object1
       console.log("\n## 2. User A marks their check for object1");
       await objectChecker.markObject({ check: checkA1 });
-      let checkA = await objectChecker._getCheck({
+      let checkAResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
+      let checkA = checkAResult.length > 0 ? checkAResult[0].doc : null;
       assertEquals(checkA?.checked, true, "User A's check should be marked");
 
       // Verify other users' checks remain unchanged
-      let checkB = await objectChecker._getCheck({
+      let checkBResult = await objectChecker._getCheck({
         user: userB,
         object: object1,
       });
-      let checkC = await objectChecker._getCheck({
+      let checkB = checkBResult.length > 0 ? checkBResult[0].doc : null;
+      let checkCResult = await objectChecker._getCheck({
         user: userC,
         object: object1,
       });
+      let checkC = checkCResult.length > 0 ? checkCResult[0].doc : null;
       assertEquals(
         checkB?.checked,
         false,
@@ -652,21 +665,24 @@ Deno.test(
       // 4. User B marks their check for object1
       console.log("\n## 3. User B marks their check for object1");
       await objectChecker.markObject({ check: checkB1 });
-      checkB = await objectChecker._getCheck({
+      checkBResult = await objectChecker._getCheck({
         user: userB,
         object: object1,
       });
+      checkB = checkBResult.length > 0 ? checkBResult[0].doc : null;
       assertEquals(checkB?.checked, true, "User B's check should now be marked");
 
       // Verify User A and C remain independent
-      checkA = await objectChecker._getCheck({
+      checkAResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
-      checkC = await objectChecker._getCheck({
+      checkA = checkAResult.length > 0 ? checkAResult[0].doc : null;
+      checkCResult = await objectChecker._getCheck({
         user: userC,
         object: object1,
       });
+      checkC = checkCResult.length > 0 ? checkCResult[0].doc : null;
       assertEquals(
         checkA?.checked,
         true,
@@ -682,10 +698,11 @@ Deno.test(
       // 5. User A unmarks their check for object1
       console.log("\n## 4. User A unmarks their check for object1");
       await objectChecker.unmarkObject({ check: checkA1 });
-      checkA = await objectChecker._getCheck({
+      checkAResult = await objectChecker._getCheck({
         user: userA,
         object: object1,
       });
+      checkA = checkAResult.length > 0 ? checkAResult[0].doc : null;
       assertEquals(
         checkA?.checked,
         false,
@@ -693,14 +710,16 @@ Deno.test(
       );
 
       // Verify others remain unchanged
-      checkB = await objectChecker._getCheck({
+      checkBResult = await objectChecker._getCheck({
         user: userB,
         object: object1,
       });
-      checkC = await objectChecker._getCheck({
+      checkB = checkBResult.length > 0 ? checkBResult[0].doc : null;
+      checkCResult = await objectChecker._getCheck({
         user: userC,
         object: object1,
       });
+      checkC = checkCResult.length > 0 ? checkCResult[0].doc : null;
       assertEquals(
         checkB?.checked,
         true,

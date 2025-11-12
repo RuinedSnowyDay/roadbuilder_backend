@@ -1,5 +1,5 @@
 import { assertEquals, assertExists, assertNotEquals } from "jsr:@std/assert";
-import { testDb, closeTestClient } from "@utils/database.ts";
+import { closeTestClient, testDb } from "@utils/database.ts";
 import { ID } from "@utils/types.ts";
 import ObjectManagerConcept from "./ObjectManagerConcept.ts";
 
@@ -302,7 +302,7 @@ Deno.test("Action: deleteAssignedObject and lifecycle", async () => {
       2,
       "Should have 2 assigned objects left",
     );
-    const titles = assignedObjects.map((ao) => ao.title);
+    const titles = assignedObjects.map((ao) => ao.doc.title);
     assertEquals(
       titles.includes("Book 2"),
       false,

@@ -350,7 +350,19 @@ export const GetGraphNodesRequest: Sync = ({ request, session, graph, doc, resul
       return new Frames(emptyResultFrame);
     }
 
-    return nodeFrames.collectAs([doc], results);
+    // The query returns { doc: NodeDoc }[], and query processing extracts doc
+    // So doc is bound to NodeDoc directly. Extract documents manually since
+    // collectAs would wrap them in { doc: ... } but frontend expects direct array.
+    const docArray = nodeFrames.map((frame) => {
+      const docValue = frame[doc];
+      if (docValue && typeof docValue === "object") {
+        return docValue;
+      }
+      return null;
+    }).filter((d) => d !== null);
+
+    const resultFrame = { ...userFrames[0], [results]: docArray };
+    return new Frames(resultFrame);
   },
   then: actions([Requesting.respond, { request, results }]),
 });
@@ -376,7 +388,19 @@ export const GetGraphEdgesRequest: Sync = ({ request, session, graph, doc, resul
       return new Frames(emptyResultFrame);
     }
 
-    return edgeFrames.collectAs([doc], results);
+    // The query returns { doc: EdgeDoc }[], and query processing extracts doc
+    // So doc is bound to EdgeDoc directly. Extract documents manually since
+    // collectAs would wrap them in { doc: ... } but frontend expects direct array.
+    const docArray = edgeFrames.map((frame) => {
+      const docValue = frame[doc];
+      if (docValue && typeof docValue === "object") {
+        return docValue;
+      }
+      return null;
+    }).filter((d) => d !== null);
+
+    const resultFrame = { ...userFrames[0], [results]: docArray };
+    return new Frames(resultFrame);
   },
   then: actions([Requesting.respond, { request, results }]),
 });
@@ -402,7 +426,19 @@ export const GetNodeOutgoingEdgesRequest: Sync = ({ request, session, node, doc,
       return new Frames(emptyResultFrame);
     }
 
-    return edgeFrames.collectAs([doc], results);
+    // The query returns { doc: EdgeDoc }[], and query processing extracts doc
+    // So doc is bound to EdgeDoc directly. Extract documents manually since
+    // collectAs would wrap them in { doc: ... } but frontend expects direct array.
+    const docArray = edgeFrames.map((frame) => {
+      const docValue = frame[doc];
+      if (docValue && typeof docValue === "object") {
+        return docValue;
+      }
+      return null;
+    }).filter((d) => d !== null);
+
+    const resultFrame = { ...userFrames[0], [results]: docArray };
+    return new Frames(resultFrame);
   },
   then: actions([Requesting.respond, { request, results }]),
 });
@@ -428,7 +464,19 @@ export const GetNodeIncomingEdgesRequest: Sync = ({ request, session, node, doc,
       return new Frames(emptyResultFrame);
     }
 
-    return edgeFrames.collectAs([doc], results);
+    // The query returns { doc: EdgeDoc }[], and query processing extracts doc
+    // So doc is bound to EdgeDoc directly. Extract documents manually since
+    // collectAs would wrap them in { doc: ... } but frontend expects direct array.
+    const docArray = edgeFrames.map((frame) => {
+      const docValue = frame[doc];
+      if (docValue && typeof docValue === "object") {
+        return docValue;
+      }
+      return null;
+    }).filter((d) => d !== null);
+
+    const resultFrame = { ...userFrames[0], [results]: docArray };
+    return new Frames(resultFrame);
   },
   then: actions([Requesting.respond, { request, results }]),
 });

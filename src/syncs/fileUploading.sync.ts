@@ -105,7 +105,15 @@ export const DeleteFileRequest: Sync = (
   then: actions([FileUploading.delete, { file }]),
 });
 
-export const DeleteFileResponse: Sync = ({ request, error }) => ({
+export const DeleteFileSuccessResponse: Sync = ({ request }) => ({
+  when: actions(
+    [Requesting.request, { path: "/FileUploading/delete" }, { request }],
+    [FileUploading.delete, {}, {}],
+  ),
+  then: actions([Requesting.respond, { request }]),
+});
+
+export const DeleteFileErrorResponse: Sync = ({ request, error }) => ({
   when: actions(
     [Requesting.request, { path: "/FileUploading/delete" }, { request }],
     [FileUploading.delete, {}, { error }],
@@ -186,7 +194,7 @@ export const GetFilenameRequest: Sync = (
 // --- Get Download URL (Query) ---
 
 export const GetDownloadURLRequest: Sync = (
-  { request, session, file, downloadURL, user },
+  { request, session, file, downloadURL, results, user },
 ) => ({
   when: actions([
     Requesting.request,
@@ -201,7 +209,7 @@ export const GetDownloadURLRequest: Sync = (
       const originalFrame = frames[0];
       return new Frames({
         ...originalFrame,
-        [downloadURL]: { error: "Invalid or expired session." },
+        [results]: { error: "Invalid or expired session." },
       });
     }
 
@@ -209,13 +217,27 @@ export const GetDownloadURLRequest: Sync = (
       file,
     }, { downloadURL });
     if (urlFrames.length === 0) {
-      const emptyResultFrame = { ...userFrames[0], [downloadURL]: null };
+      // No download URL found, return empty array
+      const emptyResultFrame = { ...userFrames[0], [results]: [] };
       return new Frames(emptyResultFrame);
     }
 
-    return urlFrames;
+    // The query returns { downloadURL: string }[], and query processing extracts downloadURL
+    // So downloadURL is bound to string directly. Extract and wrap in array since
+    // callConceptQuery expects results to be an array.
+    const urlValue = urlFrames[0][downloadURL];
+    if (urlValue && typeof urlValue === "string") {
+      const resultFrame = {
+        ...userFrames[0],
+        [results]: [{ downloadURL: urlValue }],
+      };
+      return new Frames(resultFrame);
+    }
+    // No valid URL, return empty array
+    const emptyResultFrame = { ...userFrames[0], [results]: [] };
+    return new Frames(emptyResultFrame);
   },
-  then: actions([Requesting.respond, { request, downloadURL }]),
+  then: actions([Requesting.respond, { request, results }]),
 });
 
 // --- Get Files By Owner (Query) ---

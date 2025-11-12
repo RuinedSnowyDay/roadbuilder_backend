@@ -136,7 +136,11 @@ export default class ObjectCheckerConcept {
    */
   async _getCheck(
     { user, object }: { user: User; object: Object },
-  ): Promise<CheckDoc | null> {
-    return await this.checks.findOne({ user, object });
+  ): Promise<{ doc: CheckDoc }[]> {
+    const doc = await this.checks.findOne({ user, object });
+    if (doc === null) {
+      return [];
+    }
+    return [{ doc }];
   }
 }

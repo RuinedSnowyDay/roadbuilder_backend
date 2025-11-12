@@ -145,12 +145,12 @@ Deno.test(
       });
       assertEquals(resources.length, 3, "Should have 3 resources");
       assertEquals(
-        resources[0].resource,
+        resources[0].doc.resource,
         resource3,
         "First resource should now be resource3 (after swap)",
       );
       assertEquals(
-        resources[2].resource,
+        resources[2].doc.resource,
         resource1,
         "Last resource should now be resource1 (after swap)",
       );
@@ -223,10 +223,10 @@ Deno.test("Action: deleteResource re-indexes remaining resources", async () => {
     console.log("✓ Created list with 4 resources at indices 0-3");
 
     // Verify initial state
-    assertEquals(resources[0].index, 0, "Item 1 should be at index 0");
-    assertEquals(resources[1].index, 1, "Item 2 should be at index 1");
-    assertEquals(resources[2].index, 2, "Item 3 should be at index 2");
-    assertEquals(resources[3].index, 3, "Item 4 should be at index 3");
+    assertEquals(resources[0].doc.index, 0, "Item 1 should be at index 0");
+    assertEquals(resources[1].doc.index, 1, "Item 2 should be at index 1");
+    assertEquals(resources[2].doc.index, 2, "Item 3 should be at index 2");
+    assertEquals(resources[3].doc.index, 3, "Item 4 should be at index 3");
 
     // Delete middle resource (index 1)
     console.log("\n## 2. Delete resource at index 1");
@@ -246,17 +246,17 @@ Deno.test("Action: deleteResource re-indexes remaining resources", async () => {
       resourceList: newResourceList,
     });
     assertEquals(resources.length, 3, "Should have 3 resources left");
-    assertEquals(resources[0].index, 0, "Item 1 should still be at index 0");
-    assertEquals(resources[0].resource, resource1, "Item 1 should be correct");
-    assertEquals(resources[1].index, 1, "Item 3 should move to index 1");
+    assertEquals(resources[0].doc.index, 0, "Item 1 should still be at index 0");
+    assertEquals(resources[0].doc.resource, resource1, "Item 1 should be correct");
+    assertEquals(resources[1].doc.index, 1, "Item 3 should move to index 1");
     assertEquals(
-      resources[1].resource,
+      resources[1].doc.resource,
       resource3,
       "Item 3 should be at index 1",
     );
-    assertEquals(resources[2].index, 2, "Item 4 should move to index 2");
+    assertEquals(resources[2].doc.index, 2, "Item 4 should move to index 2");
     assertEquals(
-      resources[2].resource,
+      resources[2].doc.resource,
       resource4,
       "Item 4 should be at index 2",
     );
@@ -327,11 +327,11 @@ Deno.test("Action: swapResources exchanges resources correctly", async () => {
 
     // Verify initial order
     assertEquals(
-      resources[0].resource,
+      resources[0].doc.resource,
       resource1,
       "Should start with resource1",
     );
-    assertEquals(resources[2].resource, resource3, "Should end with resource3");
+    assertEquals(resources[2].doc.resource, resource3, "Should end with resource3");
 
     // Swap first and last
     console.log("\n## 2. Swap resources at indices 0 and 2");
@@ -352,17 +352,17 @@ Deno.test("Action: swapResources exchanges resources correctly", async () => {
       resourceList: newResourceList,
     });
     assertEquals(
-      resources[0].resource,
+      resources[0].doc.resource,
       resource3,
       "Index 0 should now have resource3",
     );
     assertEquals(
-      resources[1].resource,
+      resources[1].doc.resource,
       resource2,
       "Index 1 should still have resource2",
     );
     assertEquals(
-      resources[2].resource,
+      resources[2].doc.resource,
       resource1,
       "Index 2 should now have resource1",
     );
@@ -379,12 +379,12 @@ Deno.test("Action: swapResources exchanges resources correctly", async () => {
       resourceList: newResourceList,
     });
     assertEquals(
-      resources[1].resource,
+      resources[1].doc.resource,
       resource1,
       "Index 1 should now have resource1",
     );
     assertEquals(
-      resources[2].resource,
+      resources[2].doc.resource,
       resource2,
       "Index 2 should now have resource2",
     );
@@ -662,10 +662,10 @@ Deno.test(
       const resources = await resourceListConcept._getListResources({
         resourceList: newResourceList,
       });
-      const renamedResource = resources.find((r) => r._id === ir1);
+      const renamedResource = resources.find((r) => r.doc._id === ir1);
       assertExists(renamedResource);
       assertEquals(
-        renamedResource.title,
+        renamedResource.doc.title,
         "Updated Title 1",
         "Title should be updated",
       );
@@ -752,9 +752,9 @@ Deno.test("Action: appendResource increments list length", async () => {
       resourceList: newResourceList,
     });
     assertEquals(resources.length, 3, "Should have 3 resources");
-    assertEquals(resources[0].index, 0, "First resource should be at index 0");
-    assertEquals(resources[1].index, 1, "Second resource should be at index 1");
-    assertEquals(resources[2].index, 2, "Third resource should be at index 2");
+    assertEquals(resources[0].doc.index, 0, "First resource should be at index 0");
+    assertEquals(resources[1].doc.index, 1, "Second resource should be at index 1");
+    assertEquals(resources[2].doc.index, 2, "Third resource should be at index 2");
     console.log("✓ All resources have correct indices");
   } finally {
     await closeTestClient(client);
@@ -809,12 +809,12 @@ Deno.test("Action: moveResource moves resources correctly", async () => {
 
     // Verify initial order
     assertEquals(
-      resources[0].resource,
+      resources[0].doc.resource,
       resource1,
       "Should start with resource1",
     );
     assertEquals(
-      resources[4].resource,
+      resources[4].doc.resource,
       resource5,
       "Should end with resource5",
     );
@@ -838,52 +838,52 @@ Deno.test("Action: moveResource moves resources correctly", async () => {
       resourceList: newResourceList,
     });
     assertEquals(
-      resources[0].resource,
+      resources[0].doc.resource,
       resource1,
       "Index 0 should still have resource1",
     );
     assertEquals(
-      resources[0].index,
+      resources[0].doc.index,
       0,
       "Index 0 should be correct",
     );
     assertEquals(
-      resources[1].resource,
+      resources[1].doc.resource,
       resource3,
       "Index 1 should now have resource3 (shifted from 2)",
     );
     assertEquals(
-      resources[1].index,
+      resources[1].doc.index,
       1,
       "Index 1 should be correct",
     );
     assertEquals(
-      resources[2].resource,
+      resources[2].doc.resource,
       resource4,
       "Index 2 should now have resource4 (shifted from 3)",
     );
     assertEquals(
-      resources[2].index,
+      resources[2].doc.index,
       2,
       "Index 2 should be correct",
     );
     assertEquals(
-      resources[3].resource,
+      resources[3].doc.resource,
       resource2,
       "Index 3 should now have resource2 (moved from 1)",
     );
     assertEquals(
-      resources[3].index,
+      resources[3].doc.index,
       3,
       "Index 3 should be correct",
     );
     assertEquals(
-      resources[4].resource,
+      resources[4].doc.resource,
       resource5,
       "Index 4 should still have resource5",
     );
     assertEquals(
-      resources[4].index,
+      resources[4].doc.index,
       4,
       "Index 4 should be correct",
     );
@@ -908,42 +908,42 @@ Deno.test("Action: moveResource moves resources correctly", async () => {
       resourceList: newResourceList,
     });
     assertEquals(
-      resources[0].resource,
+      resources[0].doc.resource,
       resource1,
       "Index 0 should still have resource1",
     );
     assertEquals(
-      resources[1].resource,
+      resources[1].doc.resource,
       resource2,
       "Index 1 should now have resource2 (moved from 3)",
     );
     assertEquals(
-      resources[1].index,
+      resources[1].doc.index,
       1,
       "Index 1 should be correct",
     );
     assertEquals(
-      resources[2].resource,
+      resources[2].doc.resource,
       resource3,
       "Index 2 should now have resource3 (shifted from 1)",
     );
     assertEquals(
-      resources[2].index,
+      resources[2].doc.index,
       2,
       "Index 2 should be correct",
     );
     assertEquals(
-      resources[3].resource,
+      resources[3].doc.resource,
       resource4,
       "Index 3 should now have resource4 (shifted from 2)",
     );
     assertEquals(
-      resources[3].index,
+      resources[3].doc.index,
       3,
       "Index 3 should be correct",
     );
     assertEquals(
-      resources[4].resource,
+      resources[4].doc.resource,
       resource5,
       "Index 4 should still have resource5",
     );

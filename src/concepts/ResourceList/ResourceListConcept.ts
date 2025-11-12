@@ -394,11 +394,12 @@ export default class ResourceListConcept {
    */
   async _getListResources(
     { resourceList }: { resourceList: ResourceList },
-  ): Promise<IndexedResourceDoc[]> {
-    return await this.indexedResources
+  ): Promise<{ doc: IndexedResourceDoc }[]> {
+    const docs = await this.indexedResources
       .find({ list: resourceList })
       .sort({ index: 1 })
       .toArray();
+    return docs.map((doc) => ({ doc }));
   }
 
   /**

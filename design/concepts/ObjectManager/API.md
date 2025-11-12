@@ -222,21 +222,23 @@
 **Request Body:**
 ```json
 {
-  "owner": "ID"
+  "session": "ID"
 }
 ```
 
 **Success Response Body (Query):**
 ```json
-[
-  {
-    "_id": "ID",
-    "owner": "ID",
-    "object": "ID",
-    "title": "string",
-    "description": "string"
-  }
-]
+{
+  "results": [
+    {
+      "_id": "ID",
+      "owner": "ID",
+      "object": "ID",
+      "title": "string",
+      "description": "string"
+    }
+  ]
+}
 ```
 
 **Error Response Body:**
@@ -245,6 +247,8 @@
   "error": "string"
 }
 ```
+
+**Note:** This endpoint requires authentication via session. The `owner` is automatically determined from the session.
 
 ---
 

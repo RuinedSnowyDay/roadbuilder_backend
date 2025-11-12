@@ -589,36 +589,40 @@ Format: source|target|reasonable`;
   /**
    * Query: Retrieves all nodes in a graph.
    */
-  async _getGraphNodes({ graph }: { graph: Graph }): Promise<NodeDoc[]> {
-    return await this.nodes.find({ parent: graph }).toArray();
+  async _getGraphNodes({ graph }: { graph: Graph }): Promise<{ doc: NodeDoc }[]> {
+    const docs = await this.nodes.find({ parent: graph }).toArray();
+    return docs.map((doc) => ({ doc }));
   }
 
   /**
    * Query: Retrieves all edges in a graph.
    */
-  async _getGraphEdges({ graph }: { graph: Graph }): Promise<EdgeDoc[]> {
+  async _getGraphEdges({ graph }: { graph: Graph }): Promise<{ doc: EdgeDoc }[]> {
     const nodesInGraph = await this.nodes.find({ parent: graph }).toArray();
     const nodeIds = nodesInGraph.map((n) => n._id);
     if (nodeIds.length === 0) {
       return [];
     }
-    return await this.edges.find({
+    const docs = await this.edges.find({
       source: { $in: nodeIds },
       target: { $in: nodeIds },
     }).toArray();
+    return docs.map((doc) => ({ doc }));
   }
 
   /**
    * Query: Retrieves all edges from a specific node.
    */
-  async _getNodeOutgoingEdges({ node }: { node: Node }): Promise<EdgeDoc[]> {
-    return await this.edges.find({ source: node }).toArray();
+  async _getNodeOutgoingEdges({ node }: { node: Node }): Promise<{ doc: EdgeDoc }[]> {
+    const docs = await this.edges.find({ source: node }).toArray();
+    return docs.map((doc) => ({ doc }));
   }
 
   /**
    * Query: Retrieves all edges to a specific node.
    */
-  async _getNodeIncomingEdges({ node }: { node: Node }): Promise<EdgeDoc[]> {
-    return await this.edges.find({ target: node }).toArray();
+  async _getNodeIncomingEdges({ node }: { node: Node }): Promise<{ doc: EdgeDoc }[]> {
+    const docs = await this.edges.find({ target: node }).toArray();
+    return docs.map((doc) => ({ doc }));
   }
 }

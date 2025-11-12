@@ -148,7 +148,7 @@ Deno.test(
       const nodes = await dagConcept._getGraphNodes({ graph: newGraph });
       assertEquals(nodes.length, 3, "Should have 3 nodes");
       assertEquals(
-        nodes.find((n) => n._id === node1)?.title,
+        nodes.find((n) => n.doc._id === node1)?.doc.title,
         "Database Schema Design",
         "Node title should be updated",
       );
@@ -313,13 +313,13 @@ Deno.test("Action: node and edge removal", async () => {
     // Remove an edge
     console.log("\n## 2. Remove an edge");
     const edge1 = edges[0];
-    const removeEdgeResult = await dagConcept.removeEdge({ edge: edge1._id });
+    const removeEdgeResult = await dagConcept.removeEdge({ edge: edge1.doc._id });
     assertEquals(
       "error" in removeEdgeResult,
       false,
       "Removing edge should succeed",
     );
-    console.log(`✓ Removed edge: ${edge1.source} → ${edge1.target}`);
+    console.log(`✓ Removed edge: ${edge1.doc.source} → ${edge1.doc.target}`);
 
     // Verify edge is removed
     edges = await dagConcept._getGraphEdges({ graph: newGraph });
@@ -647,7 +647,7 @@ Deno.test("Action: accessEdge and edge queries", async () => {
       node: node2,
     });
     assertEquals(outgoingEdges.length, 1, "Node 2 should have 1 outgoing edge");
-    assertEquals(outgoingEdges[0].target, node3, "Target should be node 3");
+    assertEquals(outgoingEdges[0].doc.target, node3, "Target should be node 3");
     console.log(`✓ Found ${outgoingEdges.length} outgoing edge(s)`);
 
     // Query incoming edges
@@ -656,7 +656,7 @@ Deno.test("Action: accessEdge and edge queries", async () => {
       node: node2,
     });
     assertEquals(incomingEdges.length, 1, "Node 2 should have 1 incoming edge");
-    assertEquals(incomingEdges[0].source, node1, "Source should be node 1");
+    assertEquals(incomingEdges[0].doc.source, node1, "Source should be node 1");
     console.log(`✓ Found ${incomingEdges.length} incoming edge(s)`);
 
     // Try to access non-existent edge

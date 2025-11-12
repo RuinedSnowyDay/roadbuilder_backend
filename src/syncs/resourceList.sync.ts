@@ -274,7 +274,19 @@ export const GetListResourcesRequest: Sync = ({ request, session, resourceList, 
       return new Frames(emptyResultFrame);
     }
 
-    return resourceFrames.collectAs([doc], results);
+    // The query returns { doc: IndexedResourceDoc }[], and query processing extracts doc
+    // So doc is bound to IndexedResourceDoc directly. Extract documents manually since
+    // collectAs would wrap them in { doc: ... } but frontend expects direct array.
+    const docArray = resourceFrames.map((frame) => {
+      const docValue = frame[doc];
+      if (docValue && typeof docValue === "object") {
+        return docValue;
+      }
+      return null;
+    }).filter((d) => d !== null);
+
+    const resultFrame = { ...userFrames[0], [results]: docArray };
+    return new Frames(resultFrame);
   },
   then: actions([Requesting.respond, { request, results }]),
 });

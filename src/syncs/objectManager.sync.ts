@@ -205,8 +205,21 @@ export const GetUserAssignedObjectsRequest: Sync = ({ request, session, user, do
       return new Frames(emptyResultFrame);
     }
 
-    // If there are objects, collect them all into a single 'results' array
-    return objectFrames.collectAs([doc], results);
+    // The query returns { doc: AssignedObjectDoc }[], and query processing extracts doc
+    // So doc is bound to AssignedObjectDoc. collectAs will collect it, but we need to
+    // extract the fields. Since collectAs uses symbol description as key, we'll get
+    // { results: [{ doc: {...} }] }. To get { results: [{...}] }, we need to manually
+    // build the results array with the document fields.
+    const docArray = objectFrames.map((frame) => {
+      const docValue = frame[doc];
+      if (docValue && typeof docValue === "object") {
+        return docValue;
+      }
+      return null;
+    }).filter((d) => d !== null);
+
+    const resultFrame = { ...userFrames[0], [results]: docArray };
+    return new Frames(resultFrame);
   },
   then: actions([
     Requesting.respond,
