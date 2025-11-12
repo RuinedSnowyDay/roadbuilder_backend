@@ -256,8 +256,9 @@ Respond with ONLY the suggested title text, nothing else. Do not include quotati
    */
   async _getObjectAssignments(
     { object }: { object: Object },
-  ): Promise<AssignedObjectDoc[]> {
-    return await this.assignedObjects.find({ object }).toArray();
+  ): Promise<{ doc: AssignedObjectDoc }[]> {
+    const docs = await this.assignedObjects.find({ object }).toArray();
+    return docs.map((doc) => ({ doc }));
   }
 
   /**

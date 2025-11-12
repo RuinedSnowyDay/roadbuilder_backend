@@ -108,7 +108,7 @@ export const IsSharedWithRequest: Sync = (
 // --- Get Files Shared With User (Query) ---
 
 export const GetFilesSharedWithUserRequest: Sync = (
-  { request, session, file, results, authenticatedUser },
+  { request, session, file, results, user },
 ) => ({
   when: actions([
     Requesting.request,
@@ -117,7 +117,7 @@ export const GetFilesSharedWithUserRequest: Sync = (
   ]),
   where: async (frames) => {
     const userFrames = await frames.query(Sessioning._getUser, { session }, {
-      authenticatedUser,
+      user,
     });
     if (userFrames.length === 0) {
       const originalFrame = frames[0];
@@ -129,7 +129,7 @@ export const GetFilesSharedWithUserRequest: Sync = (
 
     // Use the authenticated user to get files shared with them
     const fileFrames = await userFrames.query(Sharing._getFilesSharedWithUser, {
-      user: authenticatedUser,
+      user,
     }, { file });
     if (fileFrames.length === 0) {
       const emptyResultFrame = { ...userFrames[0], [results]: [] };

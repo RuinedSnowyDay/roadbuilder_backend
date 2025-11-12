@@ -259,3 +259,42 @@ export const GetUserAssignedObjectsRequest: Sync = ({ request, session, user, do
   ]),
 });
 
+// --- Get Object Assignments (Query) ---
+
+export const GetObjectAssignmentsRequest: Sync = ({ request, session, object, doc, results, user }) => ({
+  when: actions([
+    Requesting.request,
+    { path: "/ObjectManager/_getObjectAssignments", session, object },
+    { request },
+  ]),
+  where: async (frames) => {
+    const userFrames = await frames.query(Sessioning._getUser, { session }, { user });
+    if (userFrames.length === 0) {
+      const originalFrame = frames[0];
+      return new Frames({ ...originalFrame, [results]: { error: "Invalid or expired session." } });
+    }
+
+    // Fetch the assigned objects for the given object
+    const objectFrames = await userFrames.query(ObjectManager._getObjectAssignments, { object }, { doc });
+    if (objectFrames.length === 0) {
+      const emptyResultFrame = { ...userFrames[0], [results]: [] };
+      return new Frames(emptyResultFrame);
+    }
+
+    // The query returns AssignedObjectDoc[], and query processing extracts doc
+    // So doc is bound to AssignedObjectDoc directly. Extract documents manually since
+    // collectAs would wrap them in { doc: ... } but frontend expects direct array.
+    const docArray = objectFrames.map((frame) => {
+      const docValue = frame[doc];
+      if (docValue && typeof docValue === "object") {
+        return docValue;
+      }
+      return null;
+    }).filter((d) => d !== null);
+
+    const resultFrame = { ...userFrames[0], [results]: docArray };
+    return new Frames(resultFrame);
+  },
+  then: actions([Requesting.respond, { request, results }]),
+});
+
