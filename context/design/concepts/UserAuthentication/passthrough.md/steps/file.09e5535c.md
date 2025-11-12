@@ -1,3 +1,14 @@
+---
+timestamp: 'Mon Nov 10 2025 17:47:36 GMT-0500 (Eastern Standard Time)'
+parent: '[[../20251110_174736.63cf8452.md]]'
+content_id: 09e5535cdedb815fc56c29ca46361abee63100aea4494b84ec6908bcd3f7306a
+---
+
+# file: src/concepts/Requesting/passthrough.ts
+
+This update configures which `UserAuthentication` routes are publicly accessible and which require synchronizations for more complex logic like session management.
+
+```typescript
 /**
  * The Requesting concept exposes passthrough routes by default,
  * which allow POSTs to the route:
@@ -25,18 +36,17 @@
  */
 
 export const inclusions: Record<string, string> = {
+  // UserAuthentication: Public endpoints for registration and user lookup.
+  "/api/UserAuthentication/register": "Public endpoint for new user registration.",
+  "/api/UserAuthentication/_getUserByUsername": "Public query to check for username existence or find a user.",
+  "/api/UserAuthentication/_getUsername": "Public query to get a username from a user ID.",
+
   // Feel free to delete these example inclusions
   "/api/LikertSurvey/_getSurveyQuestions": "this is a public query",
   "/api/LikertSurvey/_getSurveyResponses": "responses are public",
   "/api/LikertSurvey/_getRespondentAnswers": "answers are visible",
   "/api/LikertSurvey/submitResponse": "allow anyone to submit response",
   "/api/LikertSurvey/updateResponse": "allow anyone to update their response",
-  "/api/UserAuthentication/register":
-    "Public endpoint for new user registration.",
-  "/api/UserAuthentication/_getUserByUsername":
-    "Public query to check for username existence or find a user.",
-  "/api/UserAuthentication/_getUsername":
-    "Public query to get a username from a user ID.",
 };
 
 /**
@@ -50,6 +60,10 @@ export const inclusions: Record<string, string> = {
  */
 
 export const exclusions: Array<string> = [
+  // UserAuthentication: Login and Logout require session management via syncs.
+  "/api/UserAuthentication/login",
+  "/api/logout", // Custom route for logging out.
+
   // Feel free to delete these example exclusions
   "/api/LikertSurvey/createSurvey",
   "/api/LikertSurvey/addQuestion",
@@ -63,3 +77,4 @@ export const exclusions: Array<string> = [
   "/api/ObjectManager/_getObjectAssignments",
   "/api/ObjectManager/_getAssignedObject",
 ];
+```

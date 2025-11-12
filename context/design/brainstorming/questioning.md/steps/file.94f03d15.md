@@ -1,3 +1,12 @@
+---
+timestamp: 'Mon Nov 10 2025 17:10:31 GMT-0500 (Eastern Standard Time)'
+parent: '[[../20251110_171031.122aa537.md]]'
+content_id: 94f03d152960846510f547b3c8ae32140eeefdfa459a898242372ad057ecbb7d
+---
+
+# file: src/concepts/Requesting/passthrough.ts
+
+```typescript
 /**
  * The Requesting concept exposes passthrough routes by default,
  * which allow POSTs to the route:
@@ -25,18 +34,8 @@
  */
 
 export const inclusions: Record<string, string> = {
-  // Feel free to delete these example inclusions
-  "/api/LikertSurvey/_getSurveyQuestions": "this is a public query",
-  "/api/LikertSurvey/_getSurveyResponses": "responses are public",
-  "/api/LikertSurvey/_getRespondentAnswers": "answers are visible",
-  "/api/LikertSurvey/submitResponse": "allow anyone to submit response",
-  "/api/LikertSurvey/updateResponse": "allow anyone to update their response",
-  "/api/UserAuthentication/register":
-    "Public endpoint for new user registration.",
-  "/api/UserAuthentication/_getUserByUsername":
-    "Public query to check for username existence or find a user.",
-  "/api/UserAuthentication/_getUsername":
-    "Public query to get a username from a user ID.",
+  // There are no public actions or queries for ObjectManager,
+  // so this list should be empty unless other public concepts are added.
 };
 
 /**
@@ -50,9 +49,8 @@ export const inclusions: Record<string, string> = {
  */
 
 export const exclusions: Array<string> = [
-  // Feel free to delete these example exclusions
-  "/api/LikertSurvey/createSurvey",
-  "/api/LikertSurvey/addQuestion",
+  // All ObjectManager actions and queries require authentication
+  // to ensure a user can only affect their own objects.
   "/api/ObjectManager/createAssignedObject",
   "/api/ObjectManager/accessObject",
   "/api/ObjectManager/deleteAssignedObject",
@@ -63,3 +61,4 @@ export const exclusions: Array<string> = [
   "/api/ObjectManager/_getObjectAssignments",
   "/api/ObjectManager/_getAssignedObject",
 ];
+```

@@ -1,3 +1,12 @@
+---
+timestamp: 'Mon Nov 10 2025 17:31:19 GMT-0500 (Eastern Standard Time)'
+parent: '[[../20251110_173119.1734b46d.md]]'
+content_id: ef73466ebc0d0b0b3273aa067147506efea6fb03b5d5ba67ae7b7f9175777a43
+---
+
+# file: src/concepts/Requesting/passthrough.ts
+
+```typescript
 /**
  * The Requesting concept exposes passthrough routes by default,
  * which allow POSTs to the route:
@@ -31,12 +40,6 @@ export const inclusions: Record<string, string> = {
   "/api/LikertSurvey/_getRespondentAnswers": "answers are visible",
   "/api/LikertSurvey/submitResponse": "allow anyone to submit response",
   "/api/LikertSurvey/updateResponse": "allow anyone to update their response",
-  "/api/UserAuthentication/register":
-    "Public endpoint for new user registration.",
-  "/api/UserAuthentication/_getUserByUsername":
-    "Public query to check for username existence or find a user.",
-  "/api/UserAuthentication/_getUsername":
-    "Public query to get a username from a user ID.",
 };
 
 /**
@@ -63,3 +66,5 @@ export const exclusions: Array<string> = [
   "/api/ObjectManager/_getObjectAssignments",
   "/api/ObjectManager/_getAssignedObject",
 ];
+
+```
