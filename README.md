@@ -332,6 +332,7 @@ See [`design/background/implementing-synchronizations.md`](design/background/imp
 - [Implementing Concepts](design/background/implementing-concepts.md)
 - [Testing Concepts](design/background/testing-concepts.md)
 - [Implementing Synchronizations](design/background/implementing-synchronizations.md)
+- [Design Notes](design_notes.md) - Development history, challenges, and solutions
 
 ### External Links
 

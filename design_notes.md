@@ -601,6 +601,84 @@ All fixes follow the established patterns:
 
 **Impact**: Fixed resource completion toggling, checkmark loading, and resource content persistence. All three issues were related to the same underlying pattern: syncs not properly handling mutually exclusive action outputs or query response formats.
 
+### Issue 4: Shared Roadmap Viewing and Resource Content Access
+
+**Problem**: Users could not see roadmaps shared with them, and even when they could see the roadmap structure, they couldn't view the markdown content of resources in shared roadmaps.
+
+**Root Causes**: Multiple issues:
+1. **GetFilesSharedWithUserRequest sync**: Used `authenticatedUser` symbol in query parameters, but the sync engine couldn't resolve it from the frame. Should use `user` instead.
+2. **Missing GetObjectAssignmentsRequest sync**: The `_getObjectAssignments` query was excluded from passthrough but had no sync, causing timeouts when trying to load shared roadmap details.
+3. **Resource content loading**: `loadResourceContent` only checked files owned by the user, not files shared with them.
+
+**Solutions**:
+1. Fixed `GetFilesSharedWithUserRequest` to use `user` instead of `authenticatedUser` for consistency with other syncs.
+2. Created `GetObjectAssignmentsRequest` sync in `objectManager.sync.ts` following the same pattern as `GetUserAssignedObjectsRequest`.
+3. Updated `_getObjectAssignments` query to return wrapped documents (`{ doc: AssignedObjectDoc }[]`) for consistency.
+4. Updated frontend `loadResourceContent` to:
+   - First check files owned by the user
+   - If not found and viewing a shared roadmap, also check files shared with the user
+   - Get filenames for all shared files in parallel and match by filename
+   - Use the matched file to get download URL (which works for shared files since `_getDownloadURL` doesn't check ownership)
+
+**Files Modified**:
+- `src/syncs/sharing.sync.ts` - Fixed `GetFilesSharedWithUserRequest` to use `user` symbol
+- `src/syncs/objectManager.sync.ts` - Added `GetObjectAssignmentsRequest` sync
+- `src/concepts/ObjectManager/ObjectManagerConcept.ts` - Updated `_getObjectAssignments` to return wrapped documents
+- `roadbuilder_frontend/src/stores/roadmap.ts` - Updated `loadResourceContent` to check shared files
+
+### Issue 5: Checkmarks Entangled Across Users
+
+**Problem**: Checkmarks from different users were getting mixed up. Users viewing shared roadmaps would see checkmarks from other users instead of their own.
+
+**Root Cause**: The frontend cache for resource checks used only `resourceId` as the key, so checkmarks were shared across users. When User A loaded a check for resource X, and then User B loaded a check for resource X, User B would see User A's cached check.
+
+**Solution**: Made the cache key user-specific by using a composite key `${userId}-${resourceId}`:
+- Updated `loadResourceCheck` to use composite key
+- Updated `toggleResourceCompletion` to use composite key
+- Updated `isResourceChecked` in `NodeContentPanel.vue` to use composite key
+- Updated `calculateNodeProgress` in `RoadmapEditor.vue` to use composite key
+- Added `clearResourceChecks()` function and call it on logout to free memory
+
+**Files Modified**:
+- `roadbuilder_frontend/src/stores/roadmap.ts` - Updated cache key to be user-specific, added `clearResourceChecks()`
+- `roadbuilder_frontend/src/components/NodeContentPanel.vue` - Updated to use composite cache key
+- `roadbuilder_frontend/src/components/RoadmapEditor.vue` - Updated to use composite cache key
+- `roadbuilder_frontend/src/stores/auth.ts` - Added call to `clearResourceChecks()` on logout
+
+**Note**: The backend was already correctly filtering checks by user (the `_getCheck` query takes both `user` and `object` as parameters), so the issue was purely in the frontend cache.
+
+### Issue 6: Resource Editor State Persistence Across Node Switches
+
+**Problem**: When switching between nodes, the markdown editor would show content from the previous node's resource instead of clearing.
+
+**Root Cause**: The `editingResource` and `editingResourceContent` refs were not being cleared when the `selectedNode` changed.
+
+**Solution**: Updated the `watch` handler for `selectedNode` to clear the resource editor state when switching between different nodes or when the node is closed.
+
+**Files Modified**:
+- `roadbuilder_frontend/src/components/NodeContentPanel.vue` - Added logic to clear resource editor on node change
+
+### Feature Addition: Roadmap Title and Description Editing
+
+**Implementation**: Added ability to edit roadmap title and description directly from the roadmap view page.
+
+**Features**:
+- Edit button (✏️) next to roadmap title (only visible for non-shared roadmaps)
+- Inline editing form with title and description fields
+- Duplicate title validation (both client-side and server-side)
+- Preserves invariant that titles must be unique per user
+- Updates both local state and backend
+
+**Implementation Details**:
+- Added `updateRoadmapTitle` and `updateRoadmapDescription` functions to roadmap store
+- Both functions check for duplicate titles before updating
+- Backend validates uniqueness via `ObjectManager.changeAssignedObjectTitle` action
+- Form includes error handling and visual feedback for duplicate titles
+
+**Files Modified**:
+- `roadbuilder_frontend/src/stores/roadmap.ts` - Added `updateRoadmapTitle` and `updateRoadmapDescription` functions
+- `roadbuilder_frontend/src/views/RoadmapView.vue` - Added edit UI, form, and handlers
+
 ## Next Steps / Future Considerations
 
 1. **Synchronizations**: ✅ Completed - All major concepts now have synchronizations
